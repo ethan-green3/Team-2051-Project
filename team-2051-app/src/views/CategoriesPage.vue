@@ -8,9 +8,24 @@
     </div>
     <p class="last-update">Last update: January 29, 2023 at 2:39PM</p>
     
+    <!-- Search Bar -->
+    <div class="search-bar-container">
+      <input 
+        type="text" 
+        v-model="searchQuery" 
+        class="search-bar" 
+        placeholder="Search categories..." 
+      />
+    </div>
+
+    <!-- Display Filtered Categories -->
     <div class="categories-grid">
-      <!-- Predefined Universal Category -->
-      <div class="category-card" @click="navigateToCategory('Universal')">
+      <!-- Universal Category -->
+      <div 
+        v-if="matchesSearch('Universal')" 
+        class="category-card" 
+        @click="navigateToCategory('Universal')"
+      >
         <div class="category-icon">
           <img src="@/assets/universal-logo.png" alt="Universal Logo" class="category-logo" />
         </div>
@@ -20,8 +35,12 @@
         </div>
       </div>
 
-      <!-- Predefined Repp Sports Category -->
-      <div class="category-card" @click="navigateToCategory('Repp Sports')">
+      <!-- Repp Sports Category -->
+      <div 
+        v-if="matchesSearch('Repp Sports')" 
+        class="category-card" 
+        @click="navigateToCategory('Repp Sports')"
+      >
         <div class="category-icon">
           <img src="@/assets/repp-logo.jpg" alt="Repp Sports Logo" class="category-logo" />
         </div>
@@ -31,9 +50,9 @@
         </div>
       </div>
 
-      <!-- Dynamically generated categories -->
+      <!-- Dynamically Added Categories -->
       <div 
-        v-for="(category, index) in categories" 
+        v-for="(category, index) in filteredCategories" 
         :key="index" 
         class="category-card" 
         @click="navigateToCategory(category.name)"
@@ -49,8 +68,8 @@
     </div>
 
     <!-- Modal for adding new category -->
-    <div v-if="isModalOpen" class="modal-overlay">
-      <div class="modal-content">
+    <div v-if="isModalOpen" class="modal-overlay" @click="closeModal">
+      <div class="modal-content" @click.stop>
         <h2>Add New Category</h2>
         <form @submit.prevent="submitCategory">
           <div class="form-group">
@@ -80,20 +99,27 @@ export default {
   name: 'CategoriesPage',
   data() {
     return {
-      isModalOpen: false, // Modal visibility
+      isModalOpen: false,
       newCategory: {
         name: '',
         items: '',
         logo: ''
       },
-      categories: [] // Array to store new categories
+      categories: [],
+      searchQuery: ''
     };
+  },
+  computed: {
+    filteredCategories() {
+      return this.categories.filter(category =>
+        category.name.toLowerCase().includes(this.searchQuery.toLowerCase())
+      );
+    }
   },
   methods: {
     navigateToCategory(category) {
-      console.log(`Navigating to ${category}`);
-      // Add logic to navigate to item list for the selected category
-    },
+    this.$router.push({ name: 'CategoryDetail', params: { categoryName: category } });
+  },
     openModal() {
       this.isModalOpen = true;
     },
@@ -101,16 +127,17 @@ export default {
       this.isModalOpen = false;
     },
     submitCategory() {
-      // Add new category to categories array
       this.categories.push({ ...this.newCategory });
-
-      // Clear the form and close modal
       this.newCategory = { name: '', items: '', logo: '' };
       this.closeModal();
+    },
+    matchesSearch(categoryName) {
+      return categoryName.toLowerCase().includes(this.searchQuery.toLowerCase());
     }
   }
 };
 </script>
+
 
 <style scoped>
 /* General container styles */
@@ -134,7 +161,7 @@ h1 {
   display: flex;
   align-items: center;
   padding: 10px 20px;
-  background-color: #5e2aa0; /* Purple button color */
+  background-color: #5e2aa0;
   color: white;
   border: none;
   border-radius: 20px;
@@ -158,6 +185,28 @@ h1 {
   margin-bottom: 20px;
 }
 
+/* Search bar styles */
+.search-bar-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.search-bar {
+  width: 50%;
+  padding: 10px 20px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 25px;
+  outline: none;
+  transition: box-shadow 0.3s ease;
+}
+
+.search-bar:focus {
+  box-shadow: 0 0 10px rgba(94, 42, 160, 0.5);
+}
+
+/* Categories grid and cards */
 .categories-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -180,17 +229,17 @@ h1 {
 }
 
 .category-logo {
-  max-width: 150px; /* Adjust size as needed */
+  max-width: 150px;
   height: auto;
 }
 
-/* Modal styles */
+/* Modal styling */
 .modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
-  right: 0;
-  bottom: 0;
+  width: 100%;
+  height: 100%;
   background-color: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
@@ -202,12 +251,8 @@ h1 {
   background-color: white;
   padding: 20px;
   border-radius: 10px;
-  width: 400px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-}
-
-.modal-content h2 {
-  margin-top: 0;
+  max-width: 500px;
+  width: 100%;
 }
 
 .form-group {
@@ -216,8 +261,8 @@ h1 {
 
 .form-group label {
   display: block;
+  font-weight: bold;
   margin-bottom: 5px;
-  color: #333;
 }
 
 .form-group input {
@@ -225,15 +270,16 @@ h1 {
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 5px;
-  font-size: 16px;
 }
 
 .form-actions {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
+  gap: 10px;
 }
 
-.save-button, .cancel-button {
+.save-button,
+.cancel-button {
   padding: 10px 20px;
   border: none;
   border-radius: 5px;
@@ -245,15 +291,7 @@ h1 {
   color: white;
 }
 
-.save-button:hover {
-  background-color: #4b1e7a;
-}
-
 .cancel-button {
   background-color: #ccc;
-}
-
-.cancel-button:hover {
-  background-color: #999;
 }
 </style>

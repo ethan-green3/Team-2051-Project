@@ -2,6 +2,8 @@ import { createRouter, createWebHistory } from 'vue-router';
 import LoginPage from '../views/LoginPage.vue';
 import CategoriesPage from '@/views/CategoriesPage.vue';
 import AddProduct from '../views/AddProduct.vue';
+import CategoryDetail from '@/views/CategoryDetail.vue'; // Import CategoryDetail
+import DashboardPage from '@/views/DashboardPage.vue'; // Import DashboardPage or placeholder component
 
 const routes = [
   {
@@ -12,19 +14,24 @@ const routes = [
   {
     path: '/dashboard',
     name: 'DashboardPage',
+    component: DashboardPage, // Assign the correct component
   },
-
   {
     path: '/categories',
     name: 'CategoriesPage',
     component: CategoriesPage,
   },
-  
   {
     path: '/add-product',
     name: 'AddProduct',
     component: AddProduct,
-  }
+  },
+  {
+    path: '/category/:categoryName', // Dynamic route for category pages
+    name: 'CategoryDetail',
+    component: CategoryDetail,
+    props: true, // Pass route params as props to the component
+  },
 ];
 
 const router = createRouter({
