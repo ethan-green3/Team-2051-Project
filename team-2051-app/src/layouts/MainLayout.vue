@@ -1,19 +1,20 @@
 <template>
-    <div class="main-layout">
-      <SidebarComponent /> <!-- The sidebar is only rendered here -->
-      <router-view /> <!-- The authenticated pages (dashboard, add product, etc.) are displayed here -->
-    </div>
-  </template>
-  
-  <script>
-  import SidebarComponent from '@/components/SidebarComponent.vue';
-  
-  export default {
-    components: {
-      SidebarComponent,
-    },
-  };
-  </script>
+  <div class="main-layout">
+    <SidebarComponent /> <!-- Sidebar included here -->
+    <router-view />
+  </div>
+</template>
+
+<script>
+import SidebarComponent from '@/components/SidebarComponent.vue';
+
+export default {
+  name: 'MainLayout',
+  components: {
+    SidebarComponent
+  }
+};
+</script>
   
   <style scoped>
   .main-layout {

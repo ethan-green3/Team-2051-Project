@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import LoginPage from '../views/LoginPage.vue';
-import DashboardPage from '../views/DashboardPage.vue';
+
 import AddProduct from '../views/AddProduct.vue';
 
 const routes = [
@@ -10,10 +10,10 @@ const routes = [
     component: LoginPage,
   },
   {
-    path: '/',
+    path: '/dashboard',
     name: 'DashboardPage',
-    component: DashboardPage,
   },
+  
   {
     path: '/add-product',
     name: 'AddProduct',

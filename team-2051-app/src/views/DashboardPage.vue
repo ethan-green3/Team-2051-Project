@@ -1,21 +1,15 @@
 <template>
-  <div class="dashboard-layout">
-    <SidebarComponent />
-    <div class="dashboard-content">
-      <h1>Welcome to the Dashboard</h1>
-    </div>
+  <div>
+    <h1>Welcome to the Dashboard</h1>
   </div>
 </template>
 
 <script>
-import SidebarComponent from '@/components/SidebarComponent.vue';
-
 export default {
-  components: {
-    SidebarComponent,
-  },
+  name: 'DashboardPage'
 };
 </script>
+
 
 <style scoped>
 .dashboard-layout {

@@ -7,8 +7,8 @@
 
     <!-- Navigation Links -->
     <nav class="sidebar-nav">
-      <router-link to="/" class="nav-item" active-class="active">
-        <i class="icon-home"></i> Home
+      <router-link to="/dashboard" class="nav-item" active-class="active">
+        <i class="icon-home"></i> Dashboard
       </router-link>
       <router-link to="/products" class="nav-item" active-class="active">
         <i class="icon-products"></i> Products
