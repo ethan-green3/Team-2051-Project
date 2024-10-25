@@ -26,4 +26,17 @@ const router = createRouter({
   routes,
 });
 
+// Navigation Guard to protect routes
+router.beforeEach((to, from, next) => {
+  const isLoggedIn = localStorage.getItem('isLoggedIn');
+
+  if (!isLoggedIn && to.name !== 'LoginPage') {
+    // Redirect to login if not logged in and trying to access another page
+    next({ name: 'LoginPage' });
+  } else {
+    // Continue to the requested route
+    next();
+  }
+});
+
 export default router;

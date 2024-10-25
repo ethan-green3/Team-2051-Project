@@ -28,7 +28,9 @@ export default {
     login() {
       if (!this.username || !this.password) {
         alert('Please enter both username and password');
+        return;
       }
+      localStorage.setItem('isLoggedIn', true)
       alert(`Logged in as ${this.username}`);
       this.$router.push({ name: 'DashboardPage' });
     }

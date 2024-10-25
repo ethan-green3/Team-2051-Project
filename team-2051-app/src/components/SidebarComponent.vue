@@ -26,9 +26,10 @@
       <router-link to="/add-product" class="sidebar-button">
         <i class="icon-add"></i> Add product
       </router-link>
-      <button class="sidebar-button">
-        <i class="icon-logout"></i> Log out
+      <button class="sidebar-button" @click="logout">
+       <i class="icon-logout"></i> Log out
       </button>
+
     </div>
   </div>
 </template>
@@ -36,8 +37,18 @@
 <script>
 export default {
   name: "SidebarComponent",
+  methods: {
+    logout() {
+      // Remove login flag from localStorage
+      localStorage.removeItem('isLoggedIn');
+      
+      // Redirect to the login page
+      this.$router.push({ name: 'LoginPage' });
+    }
+  }
 };
 </script>
+
 
 <style scoped>
 /* Sidebar container styling */
