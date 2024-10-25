@@ -35,7 +35,7 @@
       </div>
       <div>
         <label>Product photos*</label>
-        <input type="file" @change="handleFileUpload" required />
+        <input type="file" @change="handleFileUpload"/>
       </div>
       <button type="submit">Save product</button>
     </form>
@@ -88,7 +88,7 @@ export default {
       };
 
       // Redirect to Products Page
-      this.$router.push({ name: 'ProductsPage' });
+      alert("Product has been added");
     }
   }
 };
