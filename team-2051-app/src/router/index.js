@@ -4,6 +4,7 @@ import CategoriesPage from '@/views/CategoriesPage.vue';
 import AddProduct from '../views/AddProduct.vue';
 import CategoryDetail from '@/views/CategoryDetail.vue'; // Import CategoryDetail
 import DashboardPage from '@/views/DashboardPage.vue'; // Import DashboardPage or placeholder component
+import ProductsPage from '@/views/ProductsPage.vue';
 
 const routes = [
   {
@@ -25,6 +26,11 @@ const routes = [
     path: '/add-product',
     name: 'AddProduct',
     component: AddProduct,
+  },
+  {
+    path: '/products',
+    name: 'ProductsPage',
+    component: ProductsPage, // Add the Products page route
   },
   {
     path: '/category/:categoryName', // Dynamic route for category pages
