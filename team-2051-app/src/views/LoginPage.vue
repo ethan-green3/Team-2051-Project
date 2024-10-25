@@ -27,7 +27,11 @@ export default {
   methods: {
     login() {
       // Handle login
+      if (!this.username || !this.password) {
+        alert('Please enter both username and password');
+      }
       alert(`Logged in as ${this.username}`);
+      this.$router.push({ name: 'Dashboard' });
     }
   }
 };
