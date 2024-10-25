@@ -1,43 +1,43 @@
 <template>
   <div class="add-product-container">
     <h1>Add product</h1>
-    <form @submit.prevent="addProduct">
-      <div>
-        <label>Name*</label>
-        <input v-model="newProduct.name" placeholder="Enter product name" required />
+    <form @submit.prevent="addProduct" class="product-form">
+      <div class="form-group">
+        <label for="name">Name*</label>
+        <input id="name" v-model="newProduct.name" placeholder="Enter product name" required />
       </div>
-      <div>
-        <label>Description</label>
-        <textarea v-model="newProduct.description" placeholder="Enter product description"></textarea>
+      <div class="form-group">
+        <label for="description">Description</label>
+        <textarea id="description" v-model="newProduct.description" placeholder="Enter product description"></textarea>
       </div>
-      <div>
-        <label>Category*</label>
-        <input v-model="newProduct.category" placeholder="Enter category" required />
+      <div class="form-group">
+        <label for="category">Category*</label>
+        <input id="category" v-model="newProduct.category" placeholder="Enter category" required />
       </div>
-      <div>
-        <label>Price*</label>
-        <input v-model="newProduct.price" placeholder="Enter price" required />
+      <div class="form-group">
+        <label for="price">Price*</label>
+        <input id="price" v-model="newProduct.price" placeholder="Enter price" required />
       </div>
-      <div>
-        <label>Item code*</label>
-        <input v-model="newProduct.itemCode" placeholder="Enter item code" required />
+      <div class="form-group">
+        <label for="itemCode">Item code*</label>
+        <input id="itemCode" v-model="newProduct.itemCode" placeholder="Enter item code" required />
       </div>
-      <div>
-        <label>Stock size*</label>
-        <input v-model="newProduct.stockSize" placeholder="Enter stock size" required />
+      <div class="form-group">
+        <label for="stockSize">Stock size*</label>
+        <input id="stockSize" v-model="newProduct.stockSize" placeholder="Enter stock size" required />
       </div>
-      <div>
-        <label>Store availability*</label>
-        <select v-model="newProduct.storeAvailability" required>
+      <div class="form-group">
+        <label for="storeAvailability">Store availability*</label>
+        <select id="storeAvailability" v-model="newProduct.storeAvailability" required>
           <option value="Available">Available</option>
           <option value="Unavailable">Unavailable</option>
         </select>
       </div>
-      <div>
-        <label>Product photos*</label>
+      <div class="form-group">
+        <label for="productPhotos">Product photos*</label>
         <input type="file" @change="handleFileUpload"/>
       </div>
-      <button type="submit">Save product</button>
+      <button type="submit" class="save-button">Save product</button>
     </form>
   </div>
 </template>
@@ -93,3 +93,73 @@ export default {
   }
 };
 </script>
+
+<style scoped>
+/* General container styling */
+.add-product-container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f7f9fc;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+/* Form styling */
+.product-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+  color: #333;
+}
+
+input, textarea, select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+
+input:focus, textarea:focus, select:focus {
+  border-color: #5e2aa0;
+  box-shadow: 0 0 5px rgba(94, 42, 160, 0.3);
+}
+
+textarea {
+  resize: vertical;
+}
+
+/* Save button styling */
+.save-button {
+  padding: 12px;
+  background-color: #5e2aa0;
+  color: white;
+  font-size: 16px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.save-button:hover {
+  background-color: #4b1e7a;
+}
+</style>
