@@ -35,7 +35,7 @@ export default {
 
 .main-content-with-sidebar {
   flex-grow: 1;
-  padding-left: 250px; /* Leave space for sidebar */
+  padding-left: 50px; /* Leave space for sidebar */
 }
 
 .main-content-full {
