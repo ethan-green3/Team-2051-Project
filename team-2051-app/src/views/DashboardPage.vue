@@ -1,34 +1,39 @@
 <template>
-    <div class="dashboard-container">
+  <div class="dashboard-layout">
+    <SidebarComponent />
+    <div class="dashboard-content">
       <h1>Welcome to the Dashboard</h1>
-      <p>You are now logged in.</p>
     </div>
-  </template>
-  
-  <script>
-  export default {
-    name: 'DashboardPage',
-  };
-  </script>
-  
-  <style scoped>
-  .dashboard-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background-color: #f7f9fc;
-    flex-direction: column;
-  }
-  
-  h1 {
-    font-size: 32px;
-    margin-bottom: 1rem;
-  }
-  
-  p {
-    font-size: 18px;
-    color: #555;
-  }
-  </style>
-  
+  </div>
+</template>
+
+<script>
+import SidebarComponent from '@/components/SidebarComponent.vue';
+
+export default {
+  components: {
+    SidebarComponent,
+  },
+};
+</script>
+
+<style scoped>
+.dashboard-layout {
+  display: flex;
+}
+
+.dashboard-content {
+  flex-grow: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  height: 100vh; /* Ensure full height for vertical centering */
+  background-color: #f8f8f8; /* Light background for content area */
+}
+
+h1 {
+  font-size: 2rem;
+  font-weight: bold;
+}
+</style>

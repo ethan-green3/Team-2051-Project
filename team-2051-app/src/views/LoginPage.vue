@@ -37,62 +37,49 @@ export default {
 </script>
 
 <style scoped>
-/* Reset default body margins and padding */
-html, body {
+/* General styling */
+body {
   margin: 0;
   padding: 0;
-  height: 100%;
   font-family: 'Arial', sans-serif;
-  background-color: #5e2aa0;
 }
 
-/* Container Styling */
+/* Full height and width for login page */
 .login-container {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background-color: #5e2aa0; /* Purple background */
+  width: 100vw; /* Ensure it uses the full width of the viewport */
+  background-color: #5e2aa0; /* Purple background color */
   color: white;
-  box-sizing: border-box;
-  padding: 0 20px;
 }
 
 /* Logo */
 .logo {
-  font-size: 2.5rem;
+  font-size: 3rem;
   font-weight: bold;
   margin-bottom: 2rem;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
-  text-align: center;
 }
 
 /* Form Styling */
 .login-form {
   width: 100%;
-  max-width: 400px; /* Ensure the form doesn't get too wide */
+  max-width: 500px; /* Increase the max-width */
   display: flex;
   flex-direction: column;
   align-items: center;
-}
-
-.form-group {
-  width: 100%;
-  margin-bottom: 1.5rem;
-}
-
-/* Label Styling */
-label {
-  font-size: 1.1rem;
-  margin-bottom: 0.5rem;
-  display: block;
+  padding: 30px;
+  background-color: rgba(255, 255, 255, 0.1); /* Add some background transparency */
+  border-radius: 20px;
 }
 
 /* Input Field Styling */
 input {
   width: 100%;
-  padding: 0.75rem;
+  padding: 1rem; /* Increase padding for input fields */
   border-radius: 30px;
   border: none;
   font-size: 1rem;
@@ -101,14 +88,16 @@ input {
   outline: none;
 }
 
-input::placeholder {
-  color: #999;
+/* Adjust Form Group Margins */
+.form-group {
+  width: 80%;
+  margin-bottom: 1.75rem; /* Increase space between form fields */
 }
 
 /* Button Styling */
 .login-button {
-  width: 100%; /* Make button same width as input */
-  padding: 0.75rem;
+  width: 80%;
+  padding: 1rem; /* Increase padding for button */
   background-color: white;
   color: #5e2aa0;
   border-radius: 30px;
@@ -117,6 +106,7 @@ input::placeholder {
   font-weight: bold;
   cursor: pointer;
   transition: background-color 0.3s ease;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Add button shadow */
 }
 
 .login-button:hover {
