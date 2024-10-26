@@ -24,6 +24,7 @@
             <th>Stock Size</th>
             <th>Store Availability</th>
             <th>Product Photo</th>
+            <th>Delete</th>
           </tr>
         </thead>
         <tbody>
@@ -37,6 +38,9 @@
             <td>{{ product.storeAvailability }}</td>
             <td>
               <img v-if="product.productPhotos" :src="product.productPhotos" alt="Product photo" class="product-photo" />
+            </td>
+            <td>
+              <button class="delete-button" @click="deleteProduct(index)">Delete</button>
             </td>
           </tr>
         </tbody>
@@ -73,6 +77,10 @@ export default {
     loadProducts() {
       const storedProducts = JSON.parse(localStorage.getItem('products')) || [];
       this.products = storedProducts;
+    },
+    deleteProduct(index) {
+      this.products.splice(index, 1);
+      localStorage.setItem('products', JSON.stringify(this.products));
     }
   }
 };
@@ -140,5 +148,21 @@ h1 {
   max-width: 50px;
   height: auto;
   border-radius: 5px;
+}
+
+/* Delete button styling */
+.delete-button {
+  padding: 5px 10px;
+  color: white;
+  background-color: red;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+.delete-button:hover {
+  background-color: darkred;
 }
 </style>
