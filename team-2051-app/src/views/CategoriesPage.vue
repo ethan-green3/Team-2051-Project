@@ -257,6 +257,7 @@ h1 {
 
 .form-group {
   margin-bottom: 15px;
+  width: 475px;
 }
 
 .form-group label {
