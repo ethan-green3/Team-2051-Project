@@ -61,6 +61,7 @@ export default {
   flex-direction: column;
   justify-content: space-between;
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1); /* Slight shadow for depth */
+  border-radius: 20px;
 }
 
 /* Logo styling */
@@ -100,12 +101,12 @@ export default {
 
 .nav-item:hover {
   background-color: #7e4bb7;
-  border-radius: 10px;
+  border-radius: 20px;
 }
 
 .active {
   background-color: #7e4bb7;
-  border-radius: 10px;
+  border-radius: 20px;
 }
 
 /* Icons placeholder (you can replace with real icons) */
