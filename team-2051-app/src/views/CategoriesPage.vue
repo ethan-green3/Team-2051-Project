@@ -1,12 +1,11 @@
 <template>
   <div class="categories-container">
     <div class="header-container">
-      <h1>Categories</h1>
       <button class="add-category-button" @click="openModal">
         <i class="plus-icon">+</i> Add Category
       </button>
     </div>
-    <p class="last-update">Last update: January 29, 2023 at 2:39PM</p>
+    
     
     <!-- Search Bar -->
     <div class="search-bar-container">
