@@ -17,6 +17,7 @@
       />
     </div>
 
+    <!-- Product Table -->
     <div v-if="filteredProducts.length">
       <table class="product-table">
         <thead>
@@ -45,7 +46,7 @@
               <img v-if="product.productPhotos" :src="product.productPhotos" alt="Product photo" class="product-photo" />
             </td>
             <td>
-              <button class="delete-button" @click="deleteProduct(index)">Delete</button>
+              <button class="delete-button" @click="confirmDelete(index)">Delete</button>
             </td>
           </tr>
         </tbody>
@@ -102,6 +103,18 @@
         </form>
       </div>
     </div>
+
+    <!-- Confirmation Modal for Deletion -->
+    <div v-if="isDeleteModalOpen" class="modal-overlay" @click="closeDeleteModal">
+      <div class="modal-content" @click.stop>
+        <h2>Confirm Deletion</h2>
+        <p>Are you sure you want to delete this product?</p>
+        <div class="form-actions">
+          <button class="confirm-button" @click="deleteProduct(confirmDeleteIndex)">Confirm</button>
+          <button class="cancel-button" @click="closeDeleteModal">Cancel</button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -113,6 +126,8 @@ export default {
       products: [],
       searchQuery: '',
       isModalOpen: false,
+      isDeleteModalOpen: false,
+      confirmDeleteIndex: null,
       newProduct: {
         name: '',
         description: '',
@@ -142,15 +157,24 @@ export default {
       const storedProducts = JSON.parse(localStorage.getItem('products')) || [];
       this.products = storedProducts;
     },
+    confirmDelete(index) {
+      this.confirmDeleteIndex = index;
+      this.isDeleteModalOpen = true;
+    },
     deleteProduct(index) {
       this.products.splice(index, 1);
       localStorage.setItem('products', JSON.stringify(this.products));
+      this.closeDeleteModal();
     },
     openModal() {
       this.isModalOpen = true;
     },
     closeModal() {
       this.isModalOpen = false;
+    },
+    closeDeleteModal() {
+      this.isDeleteModalOpen = false;
+      this.confirmDeleteIndex = null;
     },
     handleFileUpload(event) {
       const file = event.target.files[0];
@@ -318,5 +342,13 @@ export default {
   background-color: #ccc;
   padding: 10px 20px;
   border-radius: 5px;
+}
+
+.confirm-button {
+  background-color: #d9534f;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
 }
 </style>
