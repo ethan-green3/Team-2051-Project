@@ -116,10 +116,13 @@ export default {
       );
     }
   },
+  mounted() {
+    this.loadCategories();
+  },
   methods: {
     navigateToCategory(category) {
-    this.$router.push({ name: 'CategoryDetail', params: { categoryName: category } });
-  },
+      this.$router.push({ name: 'CategoryDetail', params: { categoryName: category } });
+    },
     openModal() {
       this.isModalOpen = true;
     },
@@ -128,8 +131,13 @@ export default {
     },
     submitCategory() {
       this.categories.push({ ...this.newCategory });
+      localStorage.setItem('categories', JSON.stringify(this.categories)); // Save to local storage
       this.newCategory = { name: '', items: '', logo: '' };
       this.closeModal();
+    },
+    loadCategories() {
+      const storedCategories = JSON.parse(localStorage.getItem('categories')) || [];
+      this.categories = storedCategories;
     },
     matchesSearch(categoryName) {
       return categoryName.toLowerCase().includes(this.searchQuery.toLowerCase());
@@ -137,7 +145,6 @@ export default {
   }
 };
 </script>
-
 
 <style scoped>
 /* General container styles */
