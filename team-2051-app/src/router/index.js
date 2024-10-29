@@ -5,6 +5,7 @@ import AddProduct from '../views/AddProduct.vue';
 import CategoryDetail from '@/views/CategoryDetail.vue'; // Import CategoryDetail
 import DashboardPage from '@/views/DashboardPage.vue'; // Import DashboardPage or placeholder component
 import ProductsPage from '@/views/ProductsPage.vue';
+import SettingsPage from '@/views/SettingsPage.vue';
 
 const routes = [
   {
@@ -37,6 +38,11 @@ const routes = [
     name: 'CategoryDetail',
     component: CategoryDetail,
     props: true, // Pass route params as props to the component
+  },
+  {
+    path: '/settings',
+    name: 'SettingsPage',
+    component: SettingsPage,
   },
 ];
 
