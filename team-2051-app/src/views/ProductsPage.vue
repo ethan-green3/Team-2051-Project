@@ -1,7 +1,12 @@
 <template>
   <div class="products-container">
-    <h1>Product List</h1>
-    
+    <div class="header-container">
+      <h1>Product List</h1>
+      <button class="add-product-button" @click="openModal">
+        + Add Product
+      </button>
+    </div>
+
     <!-- Search Bar -->
     <div class="search-bar-container">
       <input 
@@ -49,6 +54,54 @@
     <div v-else>
       <p>No products match your search criteria.</p>
     </div>
+
+    <!-- Modal for Adding Product -->
+    <div v-if="isModalOpen" class="modal-overlay" @click="closeModal">
+      <div class="modal-content" @click.stop>
+        <h2>Add New Product</h2>
+        <form @submit.prevent="addProduct">
+          <div class="form-group">
+            <label for="name">Name*</label>
+            <input v-model="newProduct.name" id="name" required />
+          </div>
+          <div class="form-group">
+            <label for="description">Description</label>
+            <textarea v-model="newProduct.description" id="description"></textarea>
+          </div>
+          <div class="form-group">
+            <label for="category">Category*</label>
+            <input v-model="newProduct.category" id="category" required />
+          </div>
+          <div class="form-group">
+            <label for="price">Price*</label>
+            <input v-model="newProduct.price" id="price" required />
+          </div>
+          <div class="form-group">
+            <label for="itemCode">Item Code*</label>
+            <input v-model="newProduct.itemCode" id="itemCode" required />
+          </div>
+          <div class="form-group">
+            <label for="stockSize">Stock Size*</label>
+            <input v-model="newProduct.stockSize" id="stockSize" required />
+          </div>
+          <div class="form-group">
+            <label for="storeAvailability">Store Availability*</label>
+            <select v-model="newProduct.storeAvailability" id="storeAvailability" required>
+              <option value="Available">Available</option>
+              <option value="Unavailable">Unavailable</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="productPhotos">Product Photo</label>
+            <input type="file" @change="handleFileUpload" />
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="save-button">Save</button>
+            <button type="button" class="cancel-button" @click="closeModal">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -58,7 +111,18 @@ export default {
   data() {
     return {
       products: [],
-      searchQuery: ''
+      searchQuery: '',
+      isModalOpen: false,
+      newProduct: {
+        name: '',
+        description: '',
+        category: '',
+        price: '',
+        itemCode: '',
+        stockSize: '',
+        storeAvailability: 'Available',
+        productPhotos: ''
+      }
     };
   },
   computed: {
@@ -81,6 +145,41 @@ export default {
     deleteProduct(index) {
       this.products.splice(index, 1);
       localStorage.setItem('products', JSON.stringify(this.products));
+    },
+    openModal() {
+      this.isModalOpen = true;
+    },
+    closeModal() {
+      this.isModalOpen = false;
+    },
+    handleFileUpload(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          this.newProduct.productPhotos = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+    },
+    addProduct() {
+      this.products.push({ ...this.newProduct });
+      localStorage.setItem('products', JSON.stringify(this.products));
+
+      // Reset newProduct form
+      this.newProduct = {
+        name: '',
+        description: '',
+        category: '',
+        price: '',
+        itemCode: '',
+        stockSize: '',
+        storeAvailability: 'Available',
+        productPhotos: ''
+      };
+
+      // Close modal after adding
+      this.closeModal();
     }
   }
 };
@@ -91,13 +190,27 @@ export default {
   padding: 20px;
 }
 
-h1 {
-  text-align: center;
+.header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 20px;
-  color: #333;
 }
 
-/* Search bar styling */
+.add-product-button {
+  padding: 10px 20px;
+  background-color: #5e2aa0;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.add-product-button:hover {
+  background-color: #4b1e7a;
+}
+
 .search-bar-container {
   display: flex;
   justify-content: center;
@@ -111,58 +224,99 @@ h1 {
   border: 1px solid #ccc;
   border-radius: 25px;
   outline: none;
-  transition: box-shadow 0.3s ease;
 }
 
-.search-bar:focus {
-  box-shadow: 0 0 10px rgba(94, 42, 160, 0.5);
-}
-
-/* Table styling */
 .product-table {
   width: 100%;
   border-collapse: collapse;
-  background-color: #f7f9fc;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
-  overflow: hidden;
+  margin-top: 10px;
 }
 
 .product-table th, .product-table td {
   padding: 15px;
   text-align: left;
-  border-bottom: 1px solid #ddd;
 }
 
 .product-table th {
   background-color: #5e2aa0;
   color: white;
-  font-weight: bold;
 }
 
-.product-table tr:hover {
-  background-color: #f1f1f1;
+.product-table td {
+  border-bottom: 1px solid #ddd;
 }
 
 .product-photo {
   max-width: 50px;
   height: auto;
-  border-radius: 5px;
 }
 
-/* Delete button styling */
 .delete-button {
-  padding: 5px 10px;
-  color: white;
   background-color: red;
+  color: white;
   border: none;
+  padding: 5px 10px;
   border-radius: 5px;
   cursor: pointer;
-  font-weight: bold;
-  transition: background-color 0.3s ease;
 }
 
-.delete-button:hover {
-  background-color: darkred;
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  width: 100%;
+  max-width: 500px;
+}
+
+.form-group {
+  margin-bottom: 10px;
+}
+
+.form-group label {
+  display: block;
+  font-weight: bold;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.save-button {
+  background-color: #5e2aa0;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.cancel-button {
+  background-color: #ccc;
+  padding: 10px 20px;
+  border-radius: 5px;
 }
 </style>
