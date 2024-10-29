@@ -30,8 +30,6 @@
           <img src="@/assets/universal-logo.png" alt="Universal Logo" class="category-logo" />
         </div>
         <div class="category-details">
-          <h2>Universal</h2>
-          <p>49 items</p>
         </div>
       </div>
 
@@ -45,10 +43,83 @@
           <img src="@/assets/repp-logo.jpg" alt="Repp Sports Logo" class="category-logo" />
         </div>
         <div class="category-details">
-          <h2>Repp Sports</h2>
-          <p>30 items</p>
         </div>
       </div>
+
+      <div 
+        v-if="matchesSearch('5% Nutrition')" 
+        class="category-card" 
+        @click="navigateToCategory('5% Nutrition')"
+      >
+        <div class="category-icon">
+          <img src="@/assets/5percent-logo.png" alt="5% Logo" class="category-logo" />
+        </div>
+        <div class="category-details">
+        </div>
+      </div>
+
+      <div 
+        v-if="matchesSearch('Body Fx')" 
+        class="category-card" 
+        @click="navigateToCategory('Body Fx')"
+      >
+        <div class="category-icon">
+          <img src="@/assets/bodyfx-logo.png" alt="5% Logo" class="category-logo" />
+        </div>
+        <div class="category-details">
+        </div>
+      </div>
+
+      <div 
+        v-if="matchesSearch('ABE' || 'All Black Everything')" 
+        class="category-card" 
+        @click="navigateToCategory('ABE')"
+      >
+        <div class="category-icon">
+          <img src="@/assets/ABE-logo.jpg" alt="5% Logo" class="category-logo" />
+        </div>
+        <div class="category-details">
+        </div>
+      </div>
+
+      <div 
+        v-if="matchesSearch('ABL Pharma')" 
+        class="category-card" 
+        @click="navigateToCategory('ABL Pharma')"
+      >
+        <div class="category-icon">
+          <img src="@/assets/ABL-logo.png" alt="5% Logo" class="category-logo" />
+        </div>
+        <div class="category-details">
+        </div>
+      </div>
+
+      <div 
+        v-if="matchesSearch('Adrenaline Nutrition')" 
+        class="category-card" 
+        @click="navigateToCategory('Adrenaline Nutrition')"
+      >
+        <div class="category-icon">
+          <img src="@/assets/AdrenalineNutrition-logo.png" alt="5% Logo" class="category-logo" />
+        </div>
+        <div class="category-details">
+        </div>
+      </div>
+
+      <div 
+        v-if="matchesSearch('All American EFX')" 
+        class="category-card" 
+        @click="navigateToCategory('All American EFX')"
+      >
+        <div class="category-icon">
+          <img src="@/assets/AllAmericanEFX-logo.png" alt="5% Logo" class="category-logo" />
+        </div>
+        <div class="category-details">
+        </div>
+      </div>
+
+      
+    
 
       <!-- Dynamically Added Categories -->
       <div 
