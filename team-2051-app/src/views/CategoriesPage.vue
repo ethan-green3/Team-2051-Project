@@ -21,8 +21,7 @@
       <div 
         v-for="(category, index) in filteredCategories" 
         :key="index" 
-        class="category-card" 
-        @click="navigateToCategory(category.name)"
+        class="category-card"
       >
         <div class="category-icon">
           <img :src="category.logo" :alt="category.name + ' Logo'" class="category-logo" />
@@ -30,6 +29,10 @@
         <div class="category-details">
           <h2>{{ category.name }}</h2>
           <p>{{ category.items }} items</p>
+        </div>
+        <div class="action-buttons">
+          <button @click="navigateToCategory(category.name)" class="view-button">View</button>
+          <button @click="openDeleteModal(category.name)" class="delete-button">Delete</button>
         </div>
       </div>
     </div>
@@ -58,6 +61,18 @@
         </form>
       </div>
     </div>
+
+    <!-- Confirmation Modal for Deletion -->
+    <div v-if="isDeleteModalOpen" class="modal-overlay" @click="closeDeleteModal">
+      <div class="modal-content" @click.stop>
+        <h2>Confirm Deletion</h2>
+        <p>Are you sure you want to delete the category "{{ categoryToDelete }}"?</p>
+        <div class="form-actions">
+          <button @click="confirmDelete" class="confirm-button">Yes, Delete</button>
+          <button @click="closeDeleteModal" class="cancel-button">Cancel</button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -69,6 +84,8 @@ export default {
   data() {
     return {
       isModalOpen: false,
+      isDeleteModalOpen: false,
+      categoryToDelete: null,
       searchQuery: '',
       newCategory: {
         name: '',
@@ -86,9 +103,9 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['addCategory']),
-    navigateToCategory(category) {
-      this.$router.push({ name: 'CategoryDetail', params: { categoryName: category } });
+    ...mapActions(['addCategory', 'deleteCategory']),
+    navigateToCategory(categoryName) {
+      this.$router.push({ name: 'CategoryDetail', params: { categoryName } });
     },
     openModal() {
       this.isModalOpen = true;
@@ -100,6 +117,20 @@ export default {
       this.addCategory({ ...this.newCategory });
       this.newCategory = { name: '', items: '', logo: '' };
       this.closeModal();
+    },
+    openDeleteModal(categoryName) {
+      this.categoryToDelete = categoryName;
+      this.isDeleteModalOpen = true;
+    },
+    closeDeleteModal() {
+      this.categoryToDelete = null;
+      this.isDeleteModalOpen = false;
+    },
+    confirmDelete() {
+      if (this.categoryToDelete) {
+        this.deleteCategory(this.categoryToDelete);
+        this.closeDeleteModal();
+      }
     }
   }
 };
@@ -115,12 +146,6 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
-}
-
-h1 {
-  font-size: 24px;
-  margin-bottom: 20px;
-  color: #333;
 }
 
 .add-category-button {
@@ -143,12 +168,6 @@ h1 {
 
 .plus-icon {
   margin-right: 5px;
-}
-
-.last-update {
-  color: #666;
-  font-size: 14px;
-  margin-bottom: 20px;
 }
 
 /* Search bar styles */
@@ -187,6 +206,7 @@ h1 {
   cursor: pointer;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  position: relative;
 }
 
 .category-card:hover {
@@ -197,6 +217,38 @@ h1 {
 .category-logo {
   max-width: 150px;
   height: auto;
+}
+
+.category-details {
+  margin-top: 10px;
+}
+
+.action-buttons {
+  display: none;
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  gap: 10px;
+}
+
+.category-card:hover .action-buttons {
+  display: flex;
+}
+
+.view-button,
+.delete-button {
+  background-color: #5e2aa0;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.delete-button {
+  background-color: red;
 }
 
 /* Modal styling */
@@ -246,7 +298,8 @@ h1 {
 }
 
 .save-button,
-.cancel-button {
+.cancel-button,
+.confirm-button {
   padding: 10px 20px;
   border: none;
   border-radius: 5px;
@@ -260,5 +313,10 @@ h1 {
 
 .cancel-button {
   background-color: #ccc;
+}
+
+.confirm-button {
+  background-color: #d9534f;
+  color: white;
 }
 </style>
