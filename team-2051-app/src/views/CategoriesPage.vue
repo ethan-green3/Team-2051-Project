@@ -5,8 +5,7 @@
         <i class="plus-icon">+</i> Add Category
       </button>
     </div>
-    
-    
+
     <!-- Search Bar -->
     <div class="search-bar-container">
       <input 
@@ -19,108 +18,6 @@
 
     <!-- Display Filtered Categories -->
     <div class="categories-grid">
-      <!-- Universal Category -->
-      <div 
-        v-if="matchesSearch('Universal')" 
-        class="category-card" 
-        @click="navigateToCategory('Universal')"
-      >
-        <div class="category-icon">
-          <img src="@/assets/universal-logo.png" alt="Universal Logo" class="category-logo" />
-        </div>
-        <div class="category-details">
-        </div>
-      </div>
-
-      <!-- Repp Sports Category -->
-      <div 
-        v-if="matchesSearch('Repp Sports')" 
-        class="category-card" 
-        @click="navigateToCategory('Repp Sports')"
-      >
-        <div class="category-icon">
-          <img src="@/assets/repp-logo.jpg" alt="Repp Sports Logo" class="category-logo" />
-        </div>
-        <div class="category-details">
-        </div>
-      </div>
-
-      <div 
-        v-if="matchesSearch('5% Nutrition')" 
-        class="category-card" 
-        @click="navigateToCategory('5% Nutrition')"
-      >
-        <div class="category-icon">
-          <img src="@/assets/5percent-logo.png" alt="5% Logo" class="category-logo" />
-        </div>
-        <div class="category-details">
-        </div>
-      </div>
-
-      <div 
-        v-if="matchesSearch('Body Fx')" 
-        class="category-card" 
-        @click="navigateToCategory('Body Fx')"
-      >
-        <div class="category-icon">
-          <img src="@/assets/bodyfx-logo.png" alt="5% Logo" class="category-logo" />
-        </div>
-        <div class="category-details">
-        </div>
-      </div>
-
-      <div 
-        v-if="matchesSearch('ABE' || 'All Black Everything')" 
-        class="category-card" 
-        @click="navigateToCategory('ABE')"
-      >
-        <div class="category-icon">
-          <img src="@/assets/ABE-logo.jpg" alt="5% Logo" class="category-logo" />
-        </div>
-        <div class="category-details">
-        </div>
-      </div>
-
-      <div 
-        v-if="matchesSearch('ABL Pharma')" 
-        class="category-card" 
-        @click="navigateToCategory('ABL Pharma')"
-      >
-        <div class="category-icon">
-          <img src="@/assets/ABL-logo.png" alt="5% Logo" class="category-logo" />
-        </div>
-        <div class="category-details">
-        </div>
-      </div>
-
-      <div 
-        v-if="matchesSearch('Adrenaline Nutrition')" 
-        class="category-card" 
-        @click="navigateToCategory('Adrenaline Nutrition')"
-      >
-        <div class="category-icon">
-          <img src="@/assets/AdrenalineNutrition-logo.png" alt="5% Logo" class="category-logo" />
-        </div>
-        <div class="category-details">
-        </div>
-      </div>
-
-      <div 
-        v-if="matchesSearch('All American EFX')" 
-        class="category-card" 
-        @click="navigateToCategory('All American EFX')"
-      >
-        <div class="category-icon">
-          <img src="@/assets/AllAmericanEFX-logo.png" alt="5% Logo" class="category-logo" />
-        </div>
-        <div class="category-details">
-        </div>
-      </div>
-
-      
-    
-
-      <!-- Dynamically Added Categories -->
       <div 
         v-for="(category, index) in filteredCategories" 
         :key="index" 
@@ -165,31 +62,31 @@
 </template>
 
 <script>
+import { mapState, mapActions } from 'vuex';
+
 export default {
   name: 'CategoriesPage',
   data() {
     return {
       isModalOpen: false,
+      searchQuery: '',
       newCategory: {
         name: '',
         items: '',
         logo: ''
-      },
-      categories: [],
-      searchQuery: ''
+      }
     };
   },
   computed: {
+    ...mapState(['categories']),
     filteredCategories() {
       return this.categories.filter(category =>
         category.name.toLowerCase().includes(this.searchQuery.toLowerCase())
       );
     }
   },
-  mounted() {
-    this.loadCategories();
-  },
   methods: {
+    ...mapActions(['addCategory']),
     navigateToCategory(category) {
       this.$router.push({ name: 'CategoryDetail', params: { categoryName: category } });
     },
@@ -200,17 +97,9 @@ export default {
       this.isModalOpen = false;
     },
     submitCategory() {
-      this.categories.push({ ...this.newCategory });
-      localStorage.setItem('categories', JSON.stringify(this.categories)); // Save to local storage
+      this.addCategory({ ...this.newCategory });
       this.newCategory = { name: '', items: '', logo: '' };
       this.closeModal();
-    },
-    loadCategories() {
-      const storedCategories = JSON.parse(localStorage.getItem('categories')) || [];
-      this.categories = storedCategories;
-    },
-    matchesSearch(categoryName) {
-      return categoryName.toLowerCase().includes(this.searchQuery.toLowerCase());
     }
   }
 };
