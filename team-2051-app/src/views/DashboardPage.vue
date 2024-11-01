@@ -66,50 +66,21 @@
 </template>
 
 <script>
+import { mapState, mapGetters } from 'vuex';
+
 export default {
   name: 'DashboardPage',
-  data() {
-    return {
-      products: [],
-      categories: [],
-    };
-  },
   computed: {
-    totalProducts() {
-      return this.products.length;
-    },
-    availableStock() {
-      return this.products.reduce((total, product) => total + parseInt(product.stockSize), 0);
-    },
-    lowStockItems() {
-      return this.products.filter(product => parseInt(product.stockSize) < 5).length;
-    },
-    recentProducts() {
-      return this.products.slice(-5).reverse();
-    },
-    lowStockList() {
-      return this.products.filter(product => parseInt(product.stockSize) < 5);
-    },
-    categoriesOverview() {
-      const categoryCounts = this.products.reduce((counts, product) => {
-        counts[product.category] = (counts[product.category] || 0) + 1;
-        return counts;
-      }, {});
-      return Object.keys(categoryCounts).map(category => ({
-        name: category,
-        itemCount: categoryCounts[category],
-      }));
-    },
-  },
-  mounted() {
-    this.loadProducts();
-  },
-  methods: {
-    loadProducts() {
-      const storedProducts = JSON.parse(localStorage.getItem('products')) || [];
-      this.products = storedProducts;
-    },
-  },
+    ...mapState(['products', 'categories']),
+    ...mapGetters({
+      totalProducts: 'totalProductsCount',
+      availableStock: 'totalAvailableStock',
+      lowStockItems: 'lowStockItemsCount',
+      recentProducts: 'recentProductsList',
+      lowStockList: 'lowStockListItems',
+      categoriesOverview: 'categoriesOverviewList'
+    }),
+  }
 };
 </script>
 

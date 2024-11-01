@@ -43,6 +43,43 @@ export default createStore({
 
     // Retrieve all categories
     allCategories: (state) => state.categories,
+
+    // Total number of products
+    totalProductsCount(state) {
+      return state.products.length;
+    },
+
+    // Total available stock across all products
+    totalAvailableStock(state) {
+      return state.products.reduce((total, product) => total + parseInt(product.stockSize), 0);
+    },
+
+    // Count of low stock items (e.g., stock size below 5)
+    lowStockItemsCount(state) {
+      return state.products.filter(product => parseInt(product.stockSize) < 5).length;
+    },
+
+    // List of recently added products (last 5 products)
+    recentProductsList(state) {
+      return [...state.products].slice(-5).reverse();
+    },
+
+    // List of products with low stock
+    lowStockListItems(state) {
+      return state.products.filter(product => parseInt(product.stockSize) < 5);
+    },
+
+    // Overview of categories with item counts
+    categoriesOverviewList(state) {
+      const categoryCounts = state.products.reduce((counts, product) => {
+        counts[product.category] = (counts[product.category] || 0) + 1;
+        return counts;
+      }, {});
+      return Object.keys(categoryCounts).map(category => ({
+        name: category,
+        itemCount: categoryCounts[category],
+      }));
+    },
   },
   
   mutations: {
