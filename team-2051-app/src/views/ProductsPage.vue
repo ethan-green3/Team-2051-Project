@@ -46,7 +46,7 @@
               <img v-if="product.productPhotos" :src="product.productPhotos" alt="Product photo" class="product-photo" />
             </td>
             <td>
-              <button class="delete-button" @click="confirmDelete(index)">Delete</button>
+              <button class="delete-button" @click="confirmDelete(product.itemCode)">Delete</button>
             </td>
           </tr>
         </tbody>
@@ -60,7 +60,7 @@
     <div v-if="isModalOpen" class="modal-overlay" @click="closeModal">
       <div class="modal-content" @click.stop>
         <h2>Add New Product</h2>
-        <form @submit.prevent="addProduct">
+        <form @submit.prevent="submitProduct">
           <div class="form-group">
             <label for="name">Name*</label>
             <input v-model="newProduct.name" id="name" required />
@@ -110,7 +110,7 @@
         <h2>Confirm Deletion</h2>
         <p>Are you sure you want to delete this product?</p>
         <div class="form-actions">
-          <button class="confirm-button" @click="deleteProduct(confirmDeleteIndex)">Confirm</button>
+          <button class="confirm-button" @click="deleteRequestedProduct(confirmDeleteCode)">Confirm</button>
           <button class="cancel-button" @click="closeDeleteModal">Cancel</button>
         </div>
       </div>
@@ -119,15 +119,16 @@
 </template>
 
 <script>
+import { mapGetters, mapActions } from 'vuex';
+
 export default {
   name: 'ProductsPage',
   data() {
     return {
-      products: [],
       searchQuery: '',
       isModalOpen: false,
       isDeleteModalOpen: false,
-      confirmDeleteIndex: null,
+      confirmDeleteCode: null,
       newProduct: {
         name: '',
         description: '',
@@ -141,56 +142,50 @@ export default {
     };
   },
   computed: {
+    // Use Vuex getter to filter products based on search query
+    ...mapGetters(['allProducts']),
     filteredProducts() {
-      return this.products.filter(product =>
+      return this.allProducts.filter(product =>
         product.name.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
         product.description.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
         product.category.toLowerCase().includes(this.searchQuery.toLowerCase())
       );
     }
   },
-  mounted() {
-    this.loadProducts();
-  },
   methods: {
-    loadProducts() {
-      const storedProducts = JSON.parse(localStorage.getItem('products')) || [];
-      this.products = storedProducts;
-    },
-    confirmDelete(index) {
-      this.confirmDeleteIndex = index;
-      this.isDeleteModalOpen = true;
-    },
-    deleteProduct(index) {
-      this.products.splice(index, 1);
-      localStorage.setItem('products', JSON.stringify(this.products));
-      this.closeDeleteModal();
-    },
+    ...mapActions(['addProduct', 'deleteProduct']),
+    
+    // Open and close modals
     openModal() {
       this.isModalOpen = true;
     },
     closeModal() {
       this.isModalOpen = false;
     },
+    confirmDelete(itemCode) {
+      this.confirmDeleteCode = itemCode;
+      this.isDeleteModalOpen = true;
+    },
     closeDeleteModal() {
       this.isDeleteModalOpen = false;
-      this.confirmDeleteIndex = null;
+      this.confirmDeleteCode = null;
     },
-    handleFileUpload(event) {
-      const file = event.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          this.newProduct.productPhotos = e.target.result;
-        };
-        reader.readAsDataURL(file);
-      }
+    
+    // Handle product addition
+    async submitProduct() {
+      await this.addProduct({ ...this.newProduct });
+      this.resetNewProductForm();
+      this.closeModal();
     },
-    addProduct() {
-      this.products.push({ ...this.newProduct });
-      localStorage.setItem('products', JSON.stringify(this.products));
-
-      // Reset newProduct form
+    
+    // Handle product deletion
+    async deleteRequestedProduct(itemCode) {
+      await this.deleteProduct(itemCode);
+      this.closeDeleteModal();
+    },
+    
+    // Reset the new product form
+    resetNewProductForm() {
       this.newProduct = {
         name: '',
         description: '',
@@ -201,10 +196,23 @@ export default {
         storeAvailability: 'Available',
         productPhotos: ''
       };
+    },
 
-      // Close modal after adding
-      this.closeModal();
+    // Handle file upload for product photos
+    handleFileUpload(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          this.newProduct.productPhotos = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
     }
+  },
+  mounted() {
+    // Load products when component is mounted
+    this.$store.dispatch('loadProducts');
   }
 };
 </script>
