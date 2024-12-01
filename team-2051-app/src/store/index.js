@@ -1,37 +1,12 @@
-// store/index.js
 import { createStore } from 'vuex';
+import axios from 'axios'; // Import axios for API calls
 
 export default createStore({
   state: {
-    // Initial in-memory data for products and categories (can be removed when connected to a database)
-    products: [
-      { 
-        name: 'Universal Protein', 
-        category: 'Universal', 
-        price: 29.99, 
-        description: 'High-quality protein', 
-        itemCode: 'UP123', 
-        stockSize: 50, 
-        storeAvailability: 'Available', 
-        productPhotos: '' 
-      },
-      { 
-        name: 'Repp BCAA', 
-        category: 'Repp Sports', 
-        price: 19.99, 
-        description: 'BCAA for muscle recovery', 
-        itemCode: 'RB456', 
-        stockSize: 30, 
-        storeAvailability: 'Available', 
-        productPhotos: '' 
-      },
-    ],
-    categories: [
-      { name: 'Universal', items: 10, logo: '@/assets/universal-logo.png' },
-      { name: 'Repp Sports', items: 5, logo: '@/assets/repp-logo.jpg' },
-    ],
+    products: [], // Initially empty; will be populated from the server
+    categories: [], // Fetch categories dynamically if needed
   },
-  
+
   getters: {
     // Retrieve all products
     allProducts: (state) => state.products,
@@ -51,12 +26,12 @@ export default createStore({
 
     // Total available stock across all products
     totalAvailableStock(state) {
-      return state.products.reduce((total, product) => total + parseInt(product.stockSize), 0);
+      return state.products.reduce((total, product) => total + parseInt(product.stockSize || 0), 0);
     },
 
     // Count of low stock items (e.g., stock size below 5)
     lowStockItemsCount(state) {
-      return state.products.filter(product => parseInt(product.stockSize) < 5).length;
+      return state.products.filter(product => parseInt(product.stockSize || 0) < 5).length;
     },
 
     // List of recently added products (last 5 products)
@@ -66,7 +41,7 @@ export default createStore({
 
     // List of products with low stock
     lowStockListItems(state) {
-      return state.products.filter(product => parseInt(product.stockSize) < 5);
+      return state.products.filter(product => parseInt(product.stockSize || 0) < 5);
     },
 
     // Overview of categories with item counts
@@ -81,8 +56,18 @@ export default createStore({
       }));
     },
   },
-  
+
   mutations: {
+    // Set products in the state
+    SET_PRODUCTS(state, products) {
+      state.products = products;
+    },
+
+    // Set categories in the state
+    SET_CATEGORIES(state, categories) {
+      state.categories = categories;
+    },
+
     // Add a new product to the state
     ADD_PRODUCT(state, product) {
       state.products.push(product);
@@ -111,60 +96,80 @@ export default createStore({
       state.categories = state.categories.filter(category => category.name !== categoryName);
     },
   },
-  
+
   actions: {
-    // Add a new product (simulates an asynchronous call, such as a database operation)
-    addProduct({ commit }, product) {
-      return new Promise((resolve) => {
-        setTimeout(() => {
-          commit('ADD_PRODUCT', product);
-          resolve();
-        }, 500); // Simulate a delay
-      });
+    // Fetch products from the server
+    async fetchProducts({ commit }) {
+      try {
+        const response = await axios.get('http://localhost:8080/products'); // Replace with your backend URL
+        commit('SET_PRODUCTS', response.data);
+      } catch (error) {
+        console.error('Error fetching products:', error);
+      }
     },
 
-    // Add a new category (simulates an async operation)
-    addCategory({ commit }, category) {
-      return new Promise((resolve) => {
-        setTimeout(() => {
-          commit('ADD_CATEGORY', category);
-          resolve();
-        }, 500);
-      });
+    // Fetch categories from the server (if needed)
+    async fetchCategories({ commit }) {
+      try {
+        const response = await axios.get('http://localhost:8080/categories'); // Replace with your backend URL
+        commit('SET_CATEGORIES', response.data);
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+      }
     },
 
-    // Update an existing product (simulated async operation)
-    updateProduct({ commit }, updatedProduct) {
-      return new Promise((resolve) => {
-        setTimeout(() => {
-          commit('UPDATE_PRODUCT', updatedProduct);
-          resolve();
-        }, 500);
-      });
+    // Add a new product (simulated async operation)
+    async addProduct({ commit }, product) {
+      try {
+        const response = await axios.post('http://localhost:8080/products', product); // Replace with your backend URL
+        commit('ADD_PRODUCT', response.data);
+      } catch (error) {
+        console.error('Error adding product:', error);
+      }
     },
 
-    // Delete a product by itemCode (simulated async operation)
-    deleteProduct({ commit }, itemCode) {
-      return new Promise((resolve) => {
-        setTimeout(() => {
-          commit('DELETE_PRODUCT', itemCode);
-          resolve();
-        }, 500);
-      });
+    // Add a new category (simulated async operation)
+    async addCategory({ commit }, category) {
+      try {
+        const response = await axios.post('http://localhost:8080/categories', category); // Replace with your backend URL
+        commit('ADD_CATEGORY', response.data);
+      } catch (error) {
+        console.error('Error adding category:', error);
+      }
     },
 
-    // Delete a category by name (simulated async operation)
-    deleteCategory({ commit }, categoryName) {
-      return new Promise((resolve) => {
-        setTimeout(() => {
-          commit('DELETE_CATEGORY', categoryName);
-          resolve();
-        }, 500);
-      });
+    // Update an existing product
+    async updateProduct({ commit }, updatedProduct) {
+      try {
+        const response = await axios.put(`http://localhost:8080/products/${updatedProduct.itemCode}`, updatedProduct); // Replace with your backend URL
+        commit('UPDATE_PRODUCT', response.data);
+      } catch (error) {
+        console.error('Error updating product:', error);
+      }
+    },
+
+    // Delete a product by itemCode
+    async deleteProduct({ commit }, itemCode) {
+      try {
+        await axios.delete(`http://localhost:8080/products/${itemCode}`); // Replace with your backend URL
+        commit('DELETE_PRODUCT', itemCode);
+      } catch (error) {
+        console.error('Error deleting product:', error);
+      }
+    },
+
+    // Delete a category by name
+    async deleteCategory({ commit }, categoryName) {
+      try {
+        await axios.delete(`localhost:8080/categories/${categoryName}`); // Replace with your backend URL
+        commit('DELETE_CATEGORY', categoryName);
+      } catch (error) {
+        console.error('Error deleting category:', error);
+      }
     },
   },
 
   modules: {
     // Additional Vuex modules can be added here if needed as the app grows
-  }
+  },
 });

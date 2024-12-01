@@ -1,7 +1,7 @@
 <template>
   <div class="dashboard-container">
     <h1>Dashboard</h1>
-    
+
     <!-- Inventory Summary -->
     <div class="summary-cards">
       <div class="summary-card">
@@ -80,7 +80,18 @@ export default {
       lowStockList: 'lowStockListItems',
       categoriesOverview: 'categoriesOverviewList'
     }),
-  }
+  },
+  methods: {
+    async fetchData() {
+      // Trigger Vuex actions to fetch data from the server
+      await this.$store.dispatch('fetchProducts');
+      await this.$store.dispatch('fetchCategories');
+    },
+  },
+  mounted() {
+    // Fetch data when the component is mounted
+    this.fetchData();
+  },
 };
 </script>
 

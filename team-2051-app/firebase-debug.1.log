@@ -1,0 +1,58 @@
+[debug] [2024-11-22T19:07:43.217Z] ----------------------------------------------------------------------
+[debug] [2024-11-22T19:07:43.219Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\ethan\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js emulators:start --only functions
+[debug] [2024-11-22T19:07:43.219Z] CLI Version:   13.27.0
+[debug] [2024-11-22T19:07:43.219Z] Platform:      win32
+[debug] [2024-11-22T19:07:43.219Z] Node Version:  v20.18.0
+[debug] [2024-11-22T19:07:43.219Z] Time:          Fri Nov 22 2024 13:07:43 GMT-0600 (Central Standard Time)
+[debug] [2024-11-22T19:07:43.219Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2024-11-22T19:07:43.307Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2024-11-22T19:07:43.307Z] > authorizing via signed-in user (ethangreen20000@gmail.com)
+[info] i  emulators: Starting emulators: functions {"metadata":{"emulator":{"name":"hub"},"message":"Starting emulators: functions"}}
+[warn] !  hub: emulator hub unable to start on port 4400, starting on 4401 instead. {"metadata":{"emulator":{"name":"hub"},"message":"emulator hub unable to start on port 4400, starting on 4401 instead."}}
+[warn] !  ui: Emulator UI unable to start on port 4000, starting on 4001 instead. {"metadata":{"emulator":{"name":"ui"},"message":"Emulator UI unable to start on port 4000, starting on 4001 instead."}}
+[warn] !  logging: Logging Emulator unable to start on port 4500, starting on 4501 instead. {"metadata":{"emulator":{"name":"logging"},"message":"Logging Emulator unable to start on port 4500, starting on 4501 instead."}}
+[debug] [2024-11-22T19:07:43.316Z] [logging] Logging Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2024-11-22T19:07:43.316Z] assigned listening specs for emulators {"user":{"hub":[{"address":"127.0.0.1","family":"IPv4","port":4401},{"address":"::1","family":"IPv6","port":4401}],"ui":[{"address":"127.0.0.1","family":"IPv4","port":4001},{"address":"::1","family":"IPv6","port":4001}],"logging":[{"address":"127.0.0.1","family":"IPv4","port":4501}]},"metadata":{"message":"assigned listening specs for emulators"}}
+[debug] [2024-11-22T19:07:43.320Z] [hub] writing locator at C:\Users\ethan\AppData\Local\Temp\hub-team-2051-app.json
+[warn] !  eventarc: Eventarc Emulator unable to start on port 9299, starting on 9300 instead. {"metadata":{"emulator":{"name":"eventarc"},"message":"Eventarc Emulator unable to start on port 9299, starting on 9300 instead."}}
+[debug] [2024-11-22T19:07:43.334Z] [eventarc] Eventarc Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[warn] !  tasks: Cloud Tasks Emulator unable to start on port 9499, starting on 9500 instead. {"metadata":{"emulator":{"name":"tasks"},"message":"Cloud Tasks Emulator unable to start on port 9499, starting on 9500 instead."}}
+[debug] [2024-11-22T19:07:43.334Z] [tasks] Cloud Tasks Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2024-11-22T19:07:43.338Z] Could not find VSCode notification endpoint: FetchError: request to http://localhost:40001/vscode/notify failed, reason: . If you are not running the Firebase Data Connect VSCode extension, this is expected and not an issue.
+[info] i  emulators: Shutting down emulators. {"metadata":{"emulator":{"name":"hub"},"message":"Shutting down emulators."}}
+[info] i  hub: Stopping emulator hub {"metadata":{"emulator":{"name":"hub"},"message":"Stopping emulator hub"}}
+[debug] [2024-11-22T19:07:43.342Z] Could not find VSCode notification endpoint: FetchError: request to http://localhost:40001/vscode/notify failed, reason: . If you are not running the Firebase Data Connect VSCode extension, this is expected and not an issue.
+[debug] [2024-11-22T19:07:43.497Z] Error: getaddrinfo ENOTFOUND https://team-2051-app.web.app/
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:internal/dns/promises:97:17)
+[error] 
+[error] Error: An unexpected error has occurred.
+[debug] [2024-11-22T19:13:38.286Z] ----------------------------------------------------------------------
+[debug] [2024-11-22T19:13:38.288Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\ethan\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js emulators:start --only functions
+[debug] [2024-11-22T19:13:38.289Z] CLI Version:   13.27.0
+[debug] [2024-11-22T19:13:38.289Z] Platform:      win32
+[debug] [2024-11-22T19:13:38.289Z] Node Version:  v20.18.0
+[debug] [2024-11-22T19:13:38.289Z] Time:          Fri Nov 22 2024 13:13:38 GMT-0600 (Central Standard Time)
+[debug] [2024-11-22T19:13:38.289Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2024-11-22T19:13:38.377Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2024-11-22T19:13:38.378Z] > authorizing via signed-in user (ethangreen20000@gmail.com)
+[info] i  emulators: Starting emulators: functions {"metadata":{"emulator":{"name":"hub"},"message":"Starting emulators: functions"}}
+[warn] !  hub: emulator hub unable to start on port 4400, starting on 4401 instead. {"metadata":{"emulator":{"name":"hub"},"message":"emulator hub unable to start on port 4400, starting on 4401 instead."}}
+[warn] !  ui: Emulator UI unable to start on port 4000, starting on 4001 instead. {"metadata":{"emulator":{"name":"ui"},"message":"Emulator UI unable to start on port 4000, starting on 4001 instead."}}
+[warn] !  logging: Logging Emulator unable to start on port 4500, starting on 4501 instead. {"metadata":{"emulator":{"name":"logging"},"message":"Logging Emulator unable to start on port 4500, starting on 4501 instead."}}
+[debug] [2024-11-22T19:13:38.386Z] [logging] Logging Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2024-11-22T19:13:38.386Z] assigned listening specs for emulators {"user":{"hub":[{"address":"127.0.0.1","family":"IPv4","port":4401},{"address":"::1","family":"IPv6","port":4401}],"ui":[{"address":"127.0.0.1","family":"IPv4","port":4001},{"address":"::1","family":"IPv6","port":4001}],"logging":[{"address":"127.0.0.1","family":"IPv4","port":4501}]},"metadata":{"message":"assigned listening specs for emulators"}}
+[debug] [2024-11-22T19:13:38.390Z] [hub] writing locator at C:\Users\ethan\AppData\Local\Temp\hub-team-2051-app.json
+[warn] !  eventarc: Eventarc Emulator unable to start on port 9299, starting on 9300 instead. {"metadata":{"emulator":{"name":"eventarc"},"message":"Eventarc Emulator unable to start on port 9299, starting on 9300 instead."}}
+[debug] [2024-11-22T19:13:38.404Z] [eventarc] Eventarc Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[warn] !  tasks: Cloud Tasks Emulator unable to start on port 9499, starting on 9500 instead. {"metadata":{"emulator":{"name":"tasks"},"message":"Cloud Tasks Emulator unable to start on port 9499, starting on 9500 instead."}}
+[debug] [2024-11-22T19:13:38.404Z] [tasks] Cloud Tasks Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2024-11-22T19:13:38.408Z] Could not find VSCode notification endpoint: FetchError: request to http://localhost:40001/vscode/notify failed, reason: . If you are not running the Firebase Data Connect VSCode extension, this is expected and not an issue.
+[info] i  emulators: Shutting down emulators. {"metadata":{"emulator":{"name":"hub"},"message":"Shutting down emulators."}}
+[info] i  hub: Stopping emulator hub {"metadata":{"emulator":{"name":"hub"},"message":"Stopping emulator hub"}}
+[debug] [2024-11-22T19:13:38.411Z] Could not find VSCode notification endpoint: FetchError: request to http://localhost:40001/vscode/notify failed, reason: . If you are not running the Firebase Data Connect VSCode extension, this is expected and not an issue.
+[debug] [2024-11-22T19:13:38.550Z] Error: getaddrinfo ENOTFOUND https://team-2051-app.web.app/
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:internal/dns/promises:97:17)
+[error] 
+[error] Error: An unexpected error has occurred.
