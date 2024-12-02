@@ -1,7 +1,7 @@
 <template>
   <div class="products-container">
     <div class="header-container">
-      <h1>Product List</h1>
+      <h1 class="products-title">Product Management</h1>
     </div>
 
     <!-- Search Bar -->
@@ -15,7 +15,7 @@
     </div>
 
     <!-- Product Table -->
-    <div v-if="filteredProducts.length">
+    <div v-if="filteredProducts.length" class="table-container">
       <table class="product-table">
         <thead>
           <tr>
@@ -34,6 +34,7 @@
                 type="number"
                 v-model.number="product.quantity"
                 @blur="updateQuantity(product.sku, product.quantity)"
+                class="quantity-input"
               />
             </td>
             <td>
@@ -43,7 +44,7 @@
         </tbody>
       </table>
     </div>
-    <div v-else>
+    <div v-else class="no-products">
       <p>No products match your search criteria.</p>
     </div>
 
@@ -148,12 +149,17 @@ export default {
 <style scoped>
 .products-container {
   padding: 20px;
+  font-family: 'Arial', sans-serif;
+  background-color: #f8f9fa;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.header-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.products-title {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #4a4a4a;
+  text-align: center;
   margin-bottom: 20px;
 }
 
@@ -170,12 +176,24 @@ export default {
   border: 1px solid #ccc;
   border-radius: 25px;
   outline: none;
+  transition: border-color 0.3s;
+}
+
+.search-bar:focus {
+  border-color: #6a11cb;
+}
+
+.table-container {
+  margin-top: 20px;
+  background: white;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .product-table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 10px;
 }
 
 .product-table th,
@@ -185,21 +203,35 @@ export default {
 }
 
 .product-table th {
-  background-color: #5e2aa0;
+  background-color: #6a11cb;
   color: white;
+  font-weight: bold;
 }
 
-.product-table td {
-  border-bottom: 1px solid #ddd;
+.product-table tr:nth-child(even) {
+  background-color: #f8f9fa;
+}
+
+.quantity-input {
+  width: 70px;
+  padding: 5px;
+  text-align: center;
+  border: 1px solid #ccc;
+  border-radius: 5px;
 }
 
 .delete-button {
-  background-color: red;
+  background-color: #d9534f;
   color: white;
   border: none;
   padding: 5px 10px;
   border-radius: 5px;
   cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.delete-button:hover {
+  background-color: #c9302c;
 }
 
 .modal-overlay {
