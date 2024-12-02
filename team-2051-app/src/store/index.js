@@ -87,8 +87,8 @@ export default createStore({
     },
 
     // Delete a product from the state by itemCode
-    DELETE_PRODUCT(state, itemCode) {
-      state.products = state.products.filter(product => product.itemCode !== itemCode);
+    DELETE_PRODUCT(state, sku) {
+      state.products = state.products.filter(product => product.sku !== sku);
     },
 
     // Delete a category from the state by name
@@ -101,7 +101,8 @@ export default createStore({
     // Fetch products from the server
     async fetchProducts({ commit }) {
       try {
-        const response = await axios.get('http://localhost:8080/products'); // Replace with your backend URL
+        const response = await axios.get('http://localhost:8080/products');
+        console.log('Server Response for Products:', response.data); // Replace with your backend URL
         commit('SET_PRODUCTS', response.data);
       } catch (error) {
         console.error('Error fetching products:', error);
