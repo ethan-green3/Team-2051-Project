@@ -63,6 +63,7 @@
 
 <script>
 import axios from "axios";
+import { useToast } from "vue-toastification"; // Import Toastification composable
 
 export default {
   name: "ProductsPage",
@@ -86,27 +87,30 @@ export default {
   methods: {
     // Fetch products from the database
     fetchProducts() {
+      const toast = useToast();
       axios
         .get("http://localhost:8080/products")
         .then((response) => {
           this.products = response.data;
+          toast.success("Products loaded successfully!");
         })
         .catch((error) => {
           console.error("Error fetching products:", error);
+          toast.error("Failed to fetch products. Please try again.");
         });
     },
 
     // Update quantity in the database
     updateQuantity(sku, quantity) {
+      const toast = useToast();
       axios
         .put(`http://localhost:8080/products/${sku}`, { quantity })
         .then(() => {
-          // Show confirmation message
-          alert(`Quantity updated successfully for SKU: ${sku}`);
+          toast.success(`Quantity updated successfully for SKU: ${sku}`);
         })
         .catch((error) => {
           console.error("Error updating quantity:", error);
-          alert(`Failed to update quantity for SKU: ${sku}. Please try again.`);
+          toast.error(`Failed to update quantity for SKU: ${sku}. Please try again.`);
         });
     },
 
@@ -123,11 +127,14 @@ export default {
 
     // Delete a product from the database
     async deleteRequestedProduct(sku) {
+      const toast = useToast();
       try {
         await axios.delete(`http://localhost:8080/products/${sku}`);
         this.products = this.products.filter((product) => product.sku !== sku);
+        toast.success(`Product with SKU: ${sku} deleted successfully.`);
       } catch (error) {
         console.error("Error deleting product:", error);
+        toast.error(`Failed to delete product with SKU: ${sku}. Please try again.`);
       }
       this.closeDeleteModal();
     },
