@@ -9,7 +9,7 @@ const toastOptions = {
   position: 'bottom-right',
   timeout: 3000,
   hideProgressBar: true,
-  closeButton: false,
+  closeButton: true,
   draggable: false,
   icon: '✅', // Custom icon
 };

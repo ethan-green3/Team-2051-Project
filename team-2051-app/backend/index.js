@@ -32,18 +32,23 @@ db.connect((err) => {
 // Get all products
 app.get('/products', (req, res) => {
   const sqlQuery = `
-    SELECT 
-      rfid.tag_number, 
-      rfid.sku, 
-      rfid.quantity, 
-      prod.product_name 
-    FROM 
-      RFID_Tag rfid
-    LEFT JOIN 
-      Product prod 
-    ON 
-      rfid.sku = prod.sku
-  `;
+  SELECT 
+    inv.tag_number, 
+    rfid.sku, 
+    inv.availability_status, 
+    prod.product_name,
+    inv.last_scanned
+  FROM 
+    Inventory inv
+  LEFT JOIN 
+    RFID_Tag rfid 
+  ON 
+    inv.tag_number = rfid.tag_number
+  LEFT JOIN 
+    Product prod 
+  ON 
+    rfid.sku = prod.sku
+`;
 
   db.query(sqlQuery, (err, results) => {
     if (err) {
@@ -55,18 +60,41 @@ app.get('/products', (req, res) => {
     }
   });
 });
+app.get('/products/missing', (req, res) => {
+  const sqlQuery = `
+   SELECT rfid.tag_number, 
+           rfid.sku, 
+           rfid.quantity, 
+           prod.product_name, 
+           inv.last_scanned
+    FROM Inventory inv
+    LEFT JOIN RFID_Tag rfid ON inv.tag_number = rfid.tag_number
+    LEFT JOIN Product prod ON rfid.sku = prod.sku
+    WHERE inv.last_scanned IS NULL
+       OR TIMESTAMPDIFF(MINUTE, inv.last_scanned, CONVERT_TZ(NOW(), '+00:00', '-06:00')) > 2;
+  `;
+
+  db.query(sqlQuery, (err, results) => {
+    if (err) {
+      console.error('Error fetching missing products:', err);
+      res.status(500).send('Error fetching missing products');
+      return;
+    }
+    res.status(200).json(results);
+  });
+});
 
 function logProductFetch(totalProducts) {
   const timestamp = new Date().toISOString();
   console.log(`[${timestamp}] Fetched ${totalProducts} products from the database.`);
 }
 
-// DELETE route to delete a product by SKU
-app.delete('/products/:sku', (req, res) => {
-  const { sku } = req.params; // Extract SKU from the URL
-  const sqlQuery = 'DELETE FROM RFID_Tag WHERE sku = ?'; // SQL query to delete the product
+// DELETE route to delete a product by Tag Number
+app.delete('/products/:tagNumber', (req, res) => {
+  const { tagNumber } = req.params; // Extract Tag Number from the URL
+  const sqlQuery = 'DELETE FROM RFID_Tag WHERE tag_number = ?'; // SQL query to delete the product by Tag Number
 
-  db.query(sqlQuery, [sku], (err, result) => {
+  db.query(sqlQuery, [tagNumber], (err, result) => {
     if (err) {
       console.error('Error executing query:', err);
       res.status(500).send('Error deleting the product from the database.');
@@ -74,12 +102,13 @@ app.delete('/products/:sku', (req, res) => {
     }
 
     if (result.affectedRows === 0) {
-      res.status(404).send('Product not found.');
+      res.status(404).send('Product with the specified Tag Number not found.');
     } else {
       res.status(200).send('Product deleted successfully.');
     }
   });
 });
+
 // Update quantity of a product by SKU
 app.put('/products/:sku', (req, res) => {
   const { sku } = req.params;

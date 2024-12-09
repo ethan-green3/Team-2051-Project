@@ -6,7 +6,7 @@
     <div class="summary-cards">
       <div class="summary-card">
         <h3>Total Products</h3>
-        <p class="summary-value">{{ products.length }}</p>
+        <p class="summary-value">{{ groupedProducts.length }}</p>
       </div>
       <div class="summary-card">
         <h3>Total Stock</h3>
@@ -18,49 +18,26 @@
       </div>
     </div>
 
-    <!-- Live Feed of Products -->
+    <!-- Aggregated Product Table -->
     <div class="section">
-      <h2 class="section-title">Recent Products (Last 5)</h2>
+      <h2 class="section-title">Aggregated Product Inventory</h2>
       <table class="products-table">
-        <thead>
-          <tr>
-            <th>Tag Number</th>
-            <th>SKU</th>
-            <th>Quantity</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(product, index) in recentProducts" :key="index">
-            <td>{{ product.tag_number }}</td>
-            <td>{{ product.sku }}</td>
-            <td>{{ product.quantity }}</td>
-            <td :class="{ 'low-stock': product.quantity <= lowStockThreshold }">
-              {{ product.quantity <= lowStockThreshold ? 'Low Stock' : 'Available' }}
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <!-- Restocking Recommendations -->
-    <div class="section restocking">
-      <h2 class="section-title">Restocking Recommendations</h2>
-      <table class="restocking-table">
         <thead>
           <tr>
             <th>Product Name</th>
             <th>SKU</th>
-            <th>Current Stock</th>
-            <th>Suggested Restock</th>
+            <th>Total Quantity</th>
+            <th>Status</th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(product, index) in lowStockList" :key="index">
+          <tr v-for="(product, index) in groupedProducts" :key="index">
             <td>{{ product.product_name }}</td>
             <td>{{ product.sku }}</td>
-            <td>{{ product.quantity }}</td>
-            <td>{{ calculateRestock(product.quantity) }}</td>
+            <td>{{ product.totalQuantity }}</td>
+            <td :class="{ 'low-stock': product.totalQuantity <= lowStockThreshold }">
+              {{ product.totalQuantity <= lowStockThreshold ? 'Low Stock' : 'Available' }}
+            </td>
           </tr>
         </tbody>
       </table>
@@ -76,20 +53,39 @@ export default {
   data() {
     return {
       products: [],
-      lowStockThreshold: 10, // Define the threshold for low stock
+      lowStockThreshold: 5, // Define the threshold for low stock
     };
   },
   computed: {
-    totalStock() {
-      return this.products.reduce((total, product) => total + product.quantity, 0);
-    },
-    lowStockList() {
-      return this.products.filter((product) => product.quantity <= this.lowStockThreshold);
-    },
-    recentProducts() {
-      return this.products.slice(-5).reverse();
-    },
+  groupedProducts() {
+    // Filter for products with availability_status = 1
+    const availableProducts = this.products.filter(product => product.availability_status === 1);
+    
+    // Group the filtered products by SKU
+    const grouped = availableProducts.reduce((acc, product) => {
+      const existing = acc.find((item) => item.sku === product.sku);
+      if (existing) {
+        existing.totalQuantity += 1; // Increment count
+      } else {
+        acc.push({
+          sku: product.sku,
+          product_name: product.product_name,
+          totalQuantity: 1, // Start with 1 for the first occurrence
+        });
+      }
+      return acc;
+    }, []);
+    return grouped;
   },
+  totalStock() {
+    // Calculate the total stock based on grouped products
+    return this.groupedProducts.reduce((total, product) => total + product.totalQuantity, 0);
+  },
+  lowStockList() {
+    // Filter for low stock products
+    return this.groupedProducts.filter((product) => product.totalQuantity <= this.lowStockThreshold);
+  },
+},
   methods: {
     fetchProducts() {
       axios
@@ -101,9 +97,6 @@ export default {
           console.error("Error fetching products:", error);
         });
     },
-    calculateRestock(quantity) {
-      return Math.max(this.lowStockThreshold * 2 - quantity, 5); // Example restock calculation
-    },
   },
   mounted() {
     this.fetchProducts();
@@ -114,6 +107,7 @@ export default {
 </script>
 
 <style scoped>
+/* Overall Page Styling */
 .dashboard-container {
   padding: 20px;
   font-family: 'Arial', sans-serif;
@@ -172,7 +166,7 @@ export default {
 }
 
 /* Table Styling */
-.products-table, .restocking-table {
+.products-table {
   width: 100%;
   border-collapse: collapse;
   margin-top: 20px;
@@ -182,20 +176,19 @@ export default {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.products-table th, .restocking-table th,
-.products-table td, .restocking-table td {
+.products-table th,
+.products-table td {
   padding: 15px;
   text-align: left;
 }
 
-.products-table th, .restocking-table th {
+.products-table th {
   background-color: #6a11cb;
   color: white;
   font-weight: bold;
 }
 
-.products-table tr:nth-child(even),
-.restocking-table tr:nth-child(even) {
+.products-table tr:nth-child(even) {
   background-color: #f8f9fa;
 }
 
