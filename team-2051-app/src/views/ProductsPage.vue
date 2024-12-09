@@ -2,6 +2,8 @@
   <div class="products-container">
     <div class="header-container">
       <h1 class="products-title">Product Management</h1>
+      <!-- Refresh Button -->
+      <button class="refresh-button" @click="refreshPage">Refresh</button>
     </div>
 
     <!-- Search Bar -->
@@ -66,6 +68,7 @@
 
 <script>
 import axios from "axios";
+import { useToast } from "vue-toastification";
 
 export default {
   name: "ProductsPage",
@@ -96,17 +99,25 @@ export default {
   },
   methods: {
     fetchProducts() {
+      const toast = useToast();
       axios
         .get("http://localhost:8080/products")
         .then((response) => {
           this.products = response.data;
+          toast.success("Products fetched successfully!");
         })
         .catch((error) => {
           console.error("Error fetching products:", error);
+          toast.error("Failed to fetch products. Please try again.");
         });
     },
     formatLastScanned(date) {
       return date ? new Date(date).toLocaleString() : "N/A";
+    },
+    refreshPage() {
+      const toast = useToast();
+      this.fetchProducts();
+      toast.info("Refreshing product data...");
     },
   },
   mounted() {
@@ -125,6 +136,21 @@ export default {
   font-size: 2rem;
   text-align: center;
   margin-bottom: 20px;
+}
+
+.refresh-button {
+  background-color: #28a745;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-left: 1900px;
+}
+
+.refresh-button:hover {
+  background-color: #218838;
 }
 
 .table-container {
