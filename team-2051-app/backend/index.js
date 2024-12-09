@@ -84,6 +84,36 @@ app.get('/products/missing', (req, res) => {
   });
 });
 
+
+app.get('/products/checked-in', (req, res) => {
+  const sqlQuery = `
+      SELECT 
+        rt.tag_number,
+        rt.sku,
+        p.product_name,
+        i.availability_status
+    FROM 
+        RFID_Tag rt
+    LEFT JOIN 
+        Product p ON rt.sku = p.sku
+    LEFT JOIN 
+        Inventory i ON rt.tag_number = i.tag_number
+    WHERE 
+        p.product_name IS NOT NULL
+        AND rt.tag_number != '000000000000000000000000'
+    ORDER BY 
+        i.availability_status ASC`;
+
+  db.query(sqlQuery, (err, results) => {
+    if (err) {
+      console.error('Error fetching missing products:', err);
+      res.status(500).send('Error fetching missing products');
+      return;
+    }
+    res.status(200).json(results);
+  });
+});
+
 function logProductFetch(totalProducts) {
   const timestamp = new Date().toISOString();
   console.log(`[${timestamp}] Fetched ${totalProducts} products from the database.`);
@@ -129,6 +159,38 @@ app.put('/products/:sku', (req, res) => {
     } else {
       res.status(200).send('Product quantity updated successfully.');
     }
+  });
+});
+
+app.post('/check-in', (req, res) => {
+  const { rfidTag, barcode } = req.body;
+
+  if (!rfidTag || !barcode) {
+      return res.status(400).send('RFID Tag and Barcode are required.');
+  }
+
+  const queryGetSKU = 'SELECT sku FROM Product WHERE barcode = ?';
+  const queryInsertTag = 'INSERT INTO RFID_Tag (tag_number, sku, quantity) VALUES (?, ?, ?)';
+
+  db.query(queryGetSKU, [barcode], (err, results) => {
+      if (err) {
+          console.error('Error fetching SKU:', err);
+          return res.status(500).send('Error fetching SKU from the database.');
+      }
+
+      if (results.length === 0) {
+          return res.status(404).send('No product found with the given barcode.');
+      }
+
+      const sku = results[0].sku;
+
+      db.query(queryInsertTag, [rfidTag, sku, 1], (err) => {
+          if (err) {
+              console.error('Error inserting RFID tag:', err);
+              return res.status(500).send('Error inserting RFID tag into the database.');
+          }
+          res.status(200).send('Product checked in successfully.');
+      });
   });
 });
 
