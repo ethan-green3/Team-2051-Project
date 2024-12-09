@@ -31,35 +31,67 @@ db.connect((err) => {
 
 // Get all products
 app.get('/products', (req, res) => {
-  const sqlQuery = `
-  SELECT 
-    inv.tag_number, 
-    rfid.sku, 
-    inv.availability_status, 
-    prod.product_name,
-    inv.last_scanned
-  FROM 
-    Inventory inv
-  LEFT JOIN 
-    RFID_Tag rfid 
-  ON 
-    inv.tag_number = rfid.tag_number
-  LEFT JOIN 
-    Product prod 
-  ON 
-    rfid.sku = prod.sku
-`;
+  // Update availability status based on the last five scans
+  const updateQuery = `
+    UPDATE Inventory
+    SET availability_status = 0
+    WHERE tag_number IN (
+        SELECT tag_number
+        FROM (
+            SELECT tag_number
+            FROM Inventory
+            WHERE last_scanned < (
+                SELECT MIN(timestamp)
+                FROM (
+                    SELECT DISTINCT timestamp
+                    FROM Reader_Activity_Log
+                    ORDER BY timestamp DESC
+                    LIMIT 6
+                ) AS last_five_scans
+            )
+        ) AS temp
+    );
+  `;
 
-  db.query(sqlQuery, (err, results) => {
-    if (err) {
-      console.error('Error executing query:', err);
-      res.status(500).send('Error retrieving products from the database.');
-    } else {
-      res.status(200).json(results);
-      logProductFetch(results.length);
+  db.query(updateQuery, (updateErr) => {
+    if (updateErr) {
+      console.error('Error updating availability status:', updateErr);
+      res.status(500).send('Error updating inventory status.');
+      return;
     }
+
+    // Fetch updated product data after updating the status
+    const sqlQuery = `
+      SELECT 
+        inv.tag_number, 
+        rfid.sku, 
+        inv.availability_status, 
+        prod.product_name,
+        inv.last_scanned
+      FROM 
+        Inventory inv
+      LEFT JOIN 
+        RFID_Tag rfid 
+      ON 
+        inv.tag_number = rfid.tag_number
+      LEFT JOIN 
+        Product prod 
+      ON 
+        rfid.sku = prod.sku
+    `;
+
+    db.query(sqlQuery, (fetchErr, results) => {
+      if (fetchErr) {
+        console.error('Error executing query:', fetchErr);
+        res.status(500).send('Error retrieving products from the database.');
+      } else {
+        res.status(200).json(results);
+        logProductFetch(results.length); // Log the number of fetched products
+      }
+    });
   });
 });
+
 app.get('/products/missing', (req, res) => {
   const sqlQuery = `
    SELECT rfid.tag_number, 

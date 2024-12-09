@@ -14,7 +14,7 @@
         <i class="icon-products"></i> Products
       </router-link>
       <router-link to="/categories" class="nav-item" active-class="active">
-        <i class="icon-categories"></i> Categories
+        <i class="icon-categories"></i> Activity
       </router-link>
       <router-link to="/settings" class="nav-item" active-class="active">
         <i class="icon-settings"></i> Settings
