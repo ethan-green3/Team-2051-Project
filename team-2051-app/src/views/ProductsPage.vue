@@ -146,7 +146,9 @@ export default {
   border-radius: 5px;
   font-size: 16px;
   cursor: pointer;
-  margin-left: 1900px;
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
 }
 
 .refresh-button:hover {
@@ -155,6 +157,7 @@ export default {
 
 .table-container {
   margin-bottom: 30px;
+  overflow-x: auto; /* Enables horizontal scrolling for the table container */
 }
 
 .table-title {
@@ -166,6 +169,7 @@ export default {
   width: 100%;
   border-collapse: collapse;
   margin-bottom: 20px;
+  min-width: 600px; /* Ensures the table doesn't collapse too much */
 }
 
 .product-table th,
@@ -197,3 +201,4 @@ export default {
   border: 1px solid #ccc;
 }
 </style>
+
