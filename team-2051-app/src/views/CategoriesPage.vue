@@ -1,25 +1,18 @@
 <template>
   <div class="check-in-container">
-    <h1 class="page-title">Check In / Check Out</h1>
+    <h1 class="page-title">Check In Products</h1>
 
-    <!-- Check In Button -->
-    <button class="check-in-button" @click="showCheckInForm = true">Check In</button>
+    <!-- Check In and Check Out Buttons -->
+    <div class="button-container">
+      <button class="check-in-button" @click="showCheckInForm = true">Check In</button>
+      <button class="check-out-button" @click="showCheckOutForm = true">Check Out</button>
+    </div>
 
     <!-- Check In Form Modal -->
     <div v-if="showCheckInForm" class="modal-overlay">
       <div class="modal-content">
-        <h2>Check In Product</h2>
-        <form @submit.prevent="submitCheckIn">
-          <div class="form-group">
-            <label for="rfidTag">RFID Tag Number</label>
-            <input
-              type="text"
-              id="rfidTag"
-              v-model="form.rfidTag"
-              required
-              placeholder="Enter RFID Tag Number"
-            />
-          </div>
+        <h2>Check In Products</h2>
+        <form @submit.prevent="submitBulkCheckIn">
           <div class="form-group">
             <label for="barcode">Barcode</label>
             <input
@@ -30,6 +23,29 @@
               placeholder="Enter Product Barcode"
             />
           </div>
+          <div class="form-group">
+            <label for="quantity">Quantity</label>
+            <input
+              type="number"
+              id="quantity"
+              v-model.number="form.quantity"
+              min="1"
+              :max="maxQuantity"
+              @input="generateRFIDFields"
+              required
+              placeholder="Enter Quantity (Max 12)"
+            />
+          </div>
+          <div class="form-group" v-for="(tag, index) in form.rfidTags" :key="index">
+            <label :for="`rfidTag-${index}`">RFID Tag Number {{ index + 1 }}</label>
+            <input
+              type="text"
+              :id="`rfidTag-${index}`"
+              v-model="form.rfidTags[index]"
+              required
+              placeholder="Enter RFID Tag Number"
+            />
+          </div>
           <div class="form-actions">
             <button type="submit" class="submit-button">Submit</button>
             <button type="button" class="cancel-button" @click="closeCheckInForm">Cancel</button>
@@ -38,31 +54,52 @@
       </div>
     </div>
 
-    <!-- Checked-In Products Table -->
-    <div class="checked-in-products">
-      <h2>Checked-In Products</h2>
-      <table class="product-table" v-if="checkedInProducts.length">
-        <thead>
-          <tr>
-            <th>RFID Tag</th>
-            <th>SKU</th>
-            <th>Product Name</th>
-            <th>Availability Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(product, index) in checkedInProducts" :key="index">
-            <td>{{ product.tag_number }}</td>
-            <td>{{ product.sku }}</td>
-            <td>{{ product.product_name }}</td>
-            <td>{{ formatAvailabilityStatus(product.availability_status) }}</td>
-          </tr>
-        </tbody>
-      </table>
-      <p v-else>No checked-in products found.</p>
+    <!-- Check Out Form Modal -->
+    <div v-if="showCheckOutForm" class="modal-overlay">
+      <div class="modal-content">
+        <h2>Check Out Product</h2>
+        <form @submit.prevent="submitCheckOut">
+          <div class="form-group">
+            <label for="rfidTag">RFID Tag Number</label>
+            <input
+              type="text"
+              id="rfidTag"
+              v-model="form.rfidTag"
+              required
+              placeholder="Enter RFID Tag Number"
+            />
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="submit-button">Submit</button>
+            <button type="button" class="cancel-button" @click="closeCheckOutForm">Cancel</button>
+          </div>
+        </form>
+      </div>
     </div>
+
+    <!-- Checked-In Products Table -->
+    <h2 class="table-title">Checked-In Products</h2>
+    <table class="product-table" v-if="products.length">
+      <thead>
+        <tr>
+          <th>RFID Tag</th>
+          <th>SKU</th>
+          <th>Product Name</th>
+          <th>Availability Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="(product, index) in products" :key="index">
+          <td>{{ product.tag_number }}</td>
+          <td>{{ product.sku }}</td>
+          <td>{{ product.product_name }}</td>
+          <td>{{ product.availability_status === 1 ? 'Checked In' : 'Checked Out' }}</td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 </template>
+
 <script>
 import axios from "axios";
 
@@ -71,59 +108,115 @@ export default {
   data() {
     return {
       showCheckInForm: false,
+      showCheckOutForm: false,
       form: {
-        rfidTag: "",
         barcode: "",
+        quantity: 1,
+        rfidTags: [""],
+        rfidTag: "",
       },
-      checkedInProducts: [], // To store the list of checked-in products
+      maxQuantity: 12,
+      products: [],
     };
   },
   methods: {
-    closeCheckInForm() {
-      this.showCheckInForm = false;
-      this.form.rfidTag = "";
-      this.form.barcode = "";
-    },
-    submitCheckIn() {
-      // API Call to Check In Product
-      axios
-        .post("http://localhost:8080/check-in", {
-          rfidTag: this.form.rfidTag,
-          barcode: this.form.barcode,
-        })
-        .then(() => {
-          alert("Product checked in successfully!");
-          this.closeCheckInForm();
-          this.fetchCheckedInProducts(); // Refresh the table after a new check-in
-        })
-        .catch((error) => {
-          console.error("Error checking in product:", error);
-          alert("Failed to check in product. Please try again.");
-        });
-    },
     fetchCheckedInProducts() {
-      // API Call to fetch checked-in products
       axios
         .get("http://localhost:8080/products/checked-in")
         .then((response) => {
-          this.checkedInProducts = response.data;
+          this.products = response.data;
         })
         .catch((error) => {
           console.error("Error fetching checked-in products:", error);
         });
     },
-    formatAvailabilityStatus(status) {
-      if (status === 1) return "Available";
-      if (status === 0) return "Missing";
-      return "Checked In";
+    closeCheckInForm() {
+      this.showCheckInForm = false;
+      this.resetForm();
+    },
+    closeCheckOutForm() {
+      this.showCheckOutForm = false;
+      this.resetForm();
+    },
+    resetForm() {
+      this.form = {
+        barcode: "",
+        quantity: 1,
+        rfidTags: [""],
+        rfidTag: "",
+      };
+    },
+    generateRFIDFields() {
+      const quantity = Math.min(this.form.quantity || 1, this.maxQuantity);
+      this.form.rfidTags = Array.from({ length: quantity }, (_, i) => this.form.rfidTags[i] || "");
+    },
+    submitBulkCheckIn() {
+      axios
+        .post("http://localhost:8080/check-in", {
+          barcode: this.form.barcode,
+          rfidTags: this.form.rfidTags,
+        })
+        .then(() => {
+          alert("Products checked in successfully!");
+          this.closeCheckInForm();
+          this.fetchCheckedInProducts();
+        })
+        .catch((error) => {
+          console.error("Error checking in products:", error);
+          alert("Failed to check in products. Please try again.");
+        });
+    },
+    submitCheckOut() {
+      axios
+        .post("http://localhost:8080/check-out", {
+          rfidTag: this.form.rfidTag,
+        })
+        .then(() => {
+          alert("Product checked out successfully!");
+          this.closeCheckOutForm();
+          this.fetchCheckedInProducts();
+        })
+        .catch((error) => {
+          console.error("Error checking out product:", error);
+          alert("Failed to check out product. Please try again.");
+        });
     },
   },
   mounted() {
-    this.fetchCheckedInProducts(); // Fetch data on component mount
+    this.fetchCheckedInProducts();
   },
 };
 </script>
+
 <style scoped>
+/* Style for Check In and Check Out Buttons */
+.button-container {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.check-in-button {
+  padding: 10px 20px;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.check-out-button {
+  padding: 10px 20px;
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
 .check-in-container {
   padding: 20px;
   font-family: Arial, sans-serif;
@@ -135,11 +228,26 @@ export default {
   margin-bottom: 20px;
 }
 
+.button-container {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
 .check-in-button {
-  display: block;
-  margin: 0 auto 20px;
   padding: 10px 20px;
   background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.check-out-button {
+  padding: 10px 20px;
+  background-color: #dc3545;
   color: white;
   border: none;
   border-radius: 5px;
@@ -161,32 +269,37 @@ export default {
 
 .modal-content {
   background: white;
-  padding: 20px;
+  padding: 20px; /* Add padding for spacing */
   border-radius: 10px;
   width: 100%;
-  max-width: 400px;
+  max-width: 400px; /* Set a maximum width for the modal */
+  box-sizing: border-box; /* Ensure padding doesn't increase width */
+  overflow-y: auto; /* Add scrolling for long content */
 }
 
 .form-group {
-  margin-bottom: 15px;
+  margin-bottom: 15px; /* Add space between form groups */
+  display: flex;
+  flex-direction: column; /* Stack labels and inputs vertically */
 }
 
 label {
-  display: block;
-  margin-bottom: 5px;
+  margin-bottom: 5px; /* Add space below the label */
   font-weight: bold;
 }
 
 input {
-  width: 100%;
+  width: 100%; /* Make the input take full width of the container */
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 5px;
+  box-sizing: border-box; /* Prevent padding from affecting width */
 }
 
 .form-actions {
   display: flex;
   justify-content: space-between;
+  margin-top: 20px; /* Add space above the buttons */
 }
 
 .submit-button {
@@ -205,15 +318,6 @@ input {
   padding: 10px 20px;
   border-radius: 5px;
   cursor: pointer;
-}
-
-.checked-in-products {
-  margin-top: 20px;
-}
-
-.checked-in-products h2 {
-  text-align: center;
-  margin-bottom: 10px;
 }
 
 .product-table {

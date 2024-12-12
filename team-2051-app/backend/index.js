@@ -146,6 +146,38 @@ app.get('/products/checked-in', (req, res) => {
   });
 });
 
+app.post('/check-out', (req, res) => {
+  console.log("POST /check-out route registered");
+  const { rfidTag } = req.body;
+  if (!rfidTag) {
+    res.status(400).send('RFID Tag number is required.');
+    return;
+  }
+
+  const sqlQuery = `
+    DELETE FROM RFID_Tag 
+    WHERE tag_number = ?;
+  `;
+
+  db.query(sqlQuery, [rfidTag], (err, result) => {
+    if (err) {
+      console.error('Error deleting product:', err);
+      res.status(500).send('Error deleting product.');
+      return;
+    }
+
+    if (result.affectedRows === 0) {
+      res.status(404).send('Product with the specified RFID Tag not found.');
+    } else {
+      res.status(200).send('Product removed from the system successfully.');
+    }
+  });
+});
+
+
+
+
+
 function logProductFetch(totalProducts) {
   const timestamp = new Date().toISOString();
   console.log(`[${timestamp}] Fetched ${totalProducts} products from the database.`);
@@ -195,36 +227,54 @@ app.put('/products/:sku', (req, res) => {
 });
 
 app.post('/check-in', (req, res) => {
-  const { rfidTag, barcode } = req.body;
-
-  if (!rfidTag || !barcode) {
-      return res.status(400).send('RFID Tag and Barcode are required.');
+  console.log('Request Body:', req.body);
+  const { barcode, rfidTags } = req.body; // Expecting an array of RFID tags
+  if (!barcode || !Array.isArray(rfidTags) || rfidTags.length === 0) {
+    console.error('Invalid request data:', req.body);
+    return res.status(400).send('Barcode and at least one RFID Tag are required.');
   }
 
   const queryGetSKU = 'SELECT sku FROM Product WHERE barcode = ?';
   const queryInsertTag = 'INSERT INTO RFID_Tag (tag_number, sku, quantity) VALUES (?, ?, ?)';
 
+  // Step 1: Retrieve the SKU from the Product table based on the barcode
   db.query(queryGetSKU, [barcode], (err, results) => {
-      if (err) {
-          console.error('Error fetching SKU:', err);
-          return res.status(500).send('Error fetching SKU from the database.');
-      }
+    if (err) {
+      console.error('Error fetching SKU:', err);
+      return res.status(500).send('Error fetching SKU from the database.');
+    }
 
-      if (results.length === 0) {
-          return res.status(404).send('No product found with the given barcode.');
-      }
+    if (results.length === 0) {
+      return res.status(404).send('No product found with the given barcode.');
+    }
 
-      const sku = results[0].sku;
+    const sku = results[0].sku;
 
-      db.query(queryInsertTag, [rfidTag, sku, 1], (err) => {
+    // Step 2: Insert each RFID tag into the RFID_Tag table
+    const insertPromises = rfidTags.map((tag) => {
+      return new Promise((resolve, reject) => {
+        db.query(queryInsertTag, [tag, sku, 1], (err) => {
           if (err) {
-              console.error('Error inserting RFID tag:', err);
-              return res.status(500).send('Error inserting RFID tag into the database.');
+            reject(err);
+          } else {
+            resolve();
           }
-          res.status(200).send('Product checked in successfully.');
+        });
+      });
+    });
+
+    // Execute all insertions
+    Promise.all(insertPromises)
+      .then(() => {
+        res.status(200).send('All RFID tags have been checked in successfully.');
+      })
+      .catch((err) => {
+        console.error('Error inserting RFID tags:', err);
+        res.status(500).send('Error checking in RFID tags.');
       });
   });
 });
+
 
 
 // Start the server
