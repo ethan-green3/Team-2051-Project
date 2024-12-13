@@ -7,7 +7,15 @@
       <button class="check-in-button" @click="showCheckInForm = true">Check In</button>
       <button class="check-out-button" @click="showCheckOutForm = true">Check Out</button>
     </div>
-
+      <!-- Search Bar -->
+    <div class="search-bar-container">
+      <input
+        type="text"
+        v-model="searchQuery"
+        class="search-bar"
+        placeholder="Search by RFID Tag or Product Name..."
+      />
+    </div>
     <!-- Check In Form Modal -->
     <div v-if="showCheckInForm" class="modal-overlay">
       <div class="modal-content">
@@ -77,26 +85,28 @@
       </div>
     </div>
 
-    <!-- Checked-In Products Table -->
-    <h2 class="table-title">Checked-In Products</h2>
-    <table class="product-table" v-if="products.length">
-      <thead>
-        <tr>
-          <th>RFID Tag</th>
-          <th>SKU</th>
-          <th>Product Name</th>
-          <th>Availability Status</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="(product, index) in products" :key="index">
-          <td>{{ product.tag_number }}</td>
-          <td>{{ product.sku }}</td>
-          <td>{{ product.product_name }}</td>
-          <td>{{ product.availability_status === 1 ? 'Checked In' : 'Checked Out' }}</td>
-        </tr>
-      </tbody>
-    </table>
+   <!-- Checked-In Products Table -->
+<h2 class="table-title">Checked-In Products</h2>
+<table class="product-table" v-if="filteredProducts.length">
+  <thead>
+    <tr>
+      <th>RFID Tag</th>
+      <th>SKU</th>
+      <th>Product Name</th>
+      <th>Availability Status</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr v-for="(product, index) in filteredProducts" :key="index">
+      <td>{{ product.tag_number }}</td>
+      <td>{{ product.sku }}</td>
+      <td>{{ product.product_name }}</td>
+      <td>{{ product.availability_status === 1 ? 'Checked In' : 'Checked Out' }}</td>
+    </tr>
+  </tbody>
+</table>
+<p v-else>No products match your search.</p>
+
   </div>
 </template>
 
@@ -117,7 +127,19 @@ export default {
       },
       maxQuantity: 12,
       products: [],
+      searchQuery: "", // Initialize searchQuery here
     };
+  },
+  computed: {
+    filteredProducts() {
+    return this.products.filter((product) => {
+    const productName = product.product_name ? product.product_name.toLowerCase() : ""; // Ensure product_name is not undefined
+    const tagNumber = product.tag_number ? product.tag_number.toLowerCase() : ""; // Ensure tag_number is not undefined
+    const searchQuery = this.searchQuery.toLowerCase();
+    return productName.includes(searchQuery) || tagNumber.includes(searchQuery);
+  });
+},
+
   },
   methods: {
     fetchCheckedInProducts() {
@@ -339,5 +361,18 @@ input {
 
 .product-table tr:nth-child(even) {
   background-color: #f8f9fa;
+}
+.search-bar-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.search-bar {
+  width: 50%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 25px;
+  font-size: 16px;
 }
 </style>
