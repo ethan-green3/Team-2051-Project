@@ -112,6 +112,7 @@
 
 <script>
 import axios from "axios";
+import { useToast } from "vue-toastification";
 
 export default {
   name: "CheckInPage",
@@ -127,29 +128,35 @@ export default {
       },
       maxQuantity: 12,
       products: [],
-      searchQuery: "", // Initialize searchQuery here
+      searchQuery: "",
     };
   },
   computed: {
     filteredProducts() {
-    return this.products.filter((product) => {
-    const productName = product.product_name ? product.product_name.toLowerCase() : ""; // Ensure product_name is not undefined
-    const tagNumber = product.tag_number ? product.tag_number.toLowerCase() : ""; // Ensure tag_number is not undefined
-    const searchQuery = this.searchQuery.toLowerCase();
-    return productName.includes(searchQuery) || tagNumber.includes(searchQuery);
-  });
-},
-
+      return this.products.filter((product) => {
+        const productName = product.product_name
+          ? product.product_name.toLowerCase()
+          : "";
+        const tagNumber = product.tag_number
+          ? product.tag_number.toLowerCase()
+          : "";
+        const searchQuery = this.searchQuery.toLowerCase();
+        return productName.includes(searchQuery) || tagNumber.includes(searchQuery);
+      });
+    },
   },
   methods: {
     fetchCheckedInProducts() {
+      const toast = useToast();
       axios
         .get("http://localhost:8080/products/checked-in")
         .then((response) => {
           this.products = response.data;
+          toast.success("Fetched checked-in products successfully!");
         })
         .catch((error) => {
           console.error("Error fetching checked-in products:", error);
+          toast.error("Failed to fetch checked-in products. Please try again.");
         });
     },
     closeCheckInForm() {
@@ -170,37 +177,42 @@ export default {
     },
     generateRFIDFields() {
       const quantity = Math.min(this.form.quantity || 1, this.maxQuantity);
-      this.form.rfidTags = Array.from({ length: quantity }, (_, i) => this.form.rfidTags[i] || "");
+      this.form.rfidTags = Array.from(
+        { length: quantity },
+        (_, i) => this.form.rfidTags[i] || ""
+      );
     },
     submitBulkCheckIn() {
+      const toast = useToast();
       axios
         .post("http://localhost:8080/check-in", {
           barcode: this.form.barcode,
           rfidTags: this.form.rfidTags,
         })
         .then(() => {
-          alert("Products checked in successfully!");
+          toast.success("Products checked in successfully!");
           this.closeCheckInForm();
           this.fetchCheckedInProducts();
         })
         .catch((error) => {
           console.error("Error checking in products:", error);
-          alert("Failed to check in products. Please try again.");
+          toast.error("Failed to check in products. Please try again.");
         });
     },
     submitCheckOut() {
+      const toast = useToast();
       axios
         .post("http://localhost:8080/check-out", {
           rfidTag: this.form.rfidTag,
         })
         .then(() => {
-          alert("Product checked out successfully!");
+          toast.success("Product checked out successfully!");
           this.closeCheckOutForm();
           this.fetchCheckedInProducts();
         })
         .catch((error) => {
           console.error("Error checking out product:", error);
-          alert("Failed to check out product. Please try again.");
+          toast.error("Failed to check out product. Please try again.");
         });
     },
   },
@@ -209,6 +221,7 @@ export default {
   },
 };
 </script>
+
 
 <style scoped>
 /* Style for Check In and Check Out Buttons */
