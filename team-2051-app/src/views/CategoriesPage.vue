@@ -1,6 +1,6 @@
 <template>
   <div class="check-in-container">
-    <h1 class="page-title">Check In Products</h1>
+    <h1 class="page-title">Product Activity</h1>
 
     <!-- Check In and Check Out Buttons -->
     <div class="button-container">
